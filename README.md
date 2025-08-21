@@ -13,14 +13,14 @@
 - **Publication-ready outputs**: Pathway coverage metrics and detailed KO detection reports
 
 ## Installation
-\```R
+```R
 # Install from GitHub
 if (!require("devtools")) install.packages("devtools")
 devtools::install_github("LiuyangLee/mclink")
-\```
+```
 
 ## Quick Start
-\```R
+```R
 library(mclink)
 # Using built-in datasets
 data(KO_pathway_ref)
@@ -36,7 +36,7 @@ results <- mclink(
 head(results$coverage)      # Pathway coverage metrics
 head(results$detected_KOs)  # Detected KOs per pathway
 head(results$log)           # log
-\```
+```
 
 ## Key Features
 ### Analysis Modes
@@ -150,9 +150,9 @@ head(results$log)           # log
 
 ## Documentation
 Full function reference:
-\```R
+```R
 ?mclink::mclink
-\```
+```
 
 ## Citation
 If you use `mclink` in your research, please cite:
