@@ -12,15 +12,11 @@
 - **Smart KO handling**: Specialized methods for plus-separated (subunits) and comma-separated (isoforms) KOs
 - **Publication-ready outputs**: Pathway coverage metrics and detailed KO detection reports
 
-## Installation
+## Quick Start
 ```R
 # Install from GitHub
 if (!require("devtools")) install.packages("devtools")
 devtools::install_github("LiuyangLee/mclink")
-```
-
-## Quick Start
-```R
 library(mclink)
 # Using built-in datasets
 data(KO_pathway_ref)
