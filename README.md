@@ -1,4 +1,4 @@
-```markdown
+````markdown
 
 # mclink: Metabolic Pathway Completeness and Abundance Analysis
 
@@ -13,14 +13,14 @@
 - **Publication-ready outputs**: Pathway coverage metrics and detailed KO detection reports
 
 ## Installation
-```r
+\```R
 # Install from GitHub
 if (!require("devtools")) install.packages("devtools")
 devtools::install_github("LiuyangLee/mclink")
-```
+\```
 
 ## Quick Start
-```r
+\```R
 library(mclink)
 # Using built-in datasets
 data(KO_pathway_ref)
@@ -36,7 +36,7 @@ results <- mclink(
 head(results$coverage)      # Pathway coverage metrics
 head(results$detected_KOs)  # Detected KOs per pathway
 head(results$log)           # log
-```
+\```
 
 ## Key Features
 ### Analysis Modes
@@ -150,9 +150,9 @@ head(results$log)           # log
 
 ## Documentation
 Full function reference:
-```r
+\```R
 ?mclink::mclink
-```
+\```
 
 ## Citation
 If you use `mclink` in your research, please cite:
@@ -174,4 +174,4 @@ GPL-3 © [Liuyang Li](https://orcid.org/0000-0001-6004-9437)
 ## Contact
 - Maintainer: Liuyang Li <cyanobacteria@yeah.net>
 - Bug reports: https://github.com/LiuyangLee/mclink/issues
-```
+````
