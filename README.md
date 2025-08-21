@@ -1,6 +1,5 @@
 ![GitHub Installs](https://img.shields.io/endpoint?url=https://r-pkg.github.io/install-stats/LiuyangLee/mclink/badge.json&label=GitHub%20Installs&style=flat-square)
 ![CRAN Downloads](https://img.shields.io/badge/dynamic/json?url=https://cranlogs.r-pkg.org/badges/grand-total/mclink&query=$.count&label=CRAN%20Downloads&color=blue&style=flat-square)
-```markdown
 
 # mclink: Metabolic Pathway Completeness and Abundance Analysis
 
@@ -153,6 +152,7 @@ Full function reference:
 ?mclink::mclink
 ```
 
+
 ## Citation
 If you use `mclink` in your research, please cite:
 > Li, L., Huang, D., Hu, Y., Rudling, N. M., Canniffe, D. P., Wang, F., & Wang, Y.
@@ -173,4 +173,3 @@ GPL-3 © [Liuyang Li](https://orcid.org/0000-0001-6004-9437)
 ## Contact
 - Maintainer: Liuyang Li <cyanobacteria@yeah.net>
 - Bug reports: https://github.com/LiuyangLee/mclink/issues
-```
