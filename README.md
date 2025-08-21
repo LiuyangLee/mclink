@@ -1,5 +1,7 @@
 ```markdown
+
 # mclink: Metabolic Pathway Completeness and Abundance Analysis
+
 ![GitHub Installs](https://img.shields.io/endpoint?url=https://r-pkg.github.io/install-stats/LiuyangLee/mclink/badge.json&label=GitHub%20Installs&style=flat-square)
 ![CRAN Downloads](https://img.shields.io/badge/dynamic/json?url=https://cranlogs.r-pkg.org/badges/grand-total/mclink&query=$.count&label=CRAN%20Downloads&color=blue&style=flat-square)
 
@@ -65,7 +67,7 @@ head(results$log)           # log
 | K00019 | 49.84410            | 41.88975                  | 13.879528           | 9.634129         |
 
 ### 2 Output Data Preview (R list `mc_list`)
-#### 2.1 Pathway Coverage Matrix (`mc_list$coverage`)
+#### 2.1 Pathway Coverage Matrix for Genomes or Samples (`mc_list$coverage`)
 | Module_Entry | Level_2           | Level_3         | Pathway Name                                      | Definition (Key KOs)                                                                                                                                                                                                                                                                                                                                 | Marinobacter salarius | Pseudooceanicola nanhaiensis | Alteromonas australica | Henriciella pelagia |
 |--------------|-------------------|-----------------|---------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|------------------------------|------------------------|---------------------|
 | M00165       | Energy metabolism | Carbon fixation | Reductive pentose phosphate cycle (Calvin cycle) | K00855 (K01601-K01602) K00927 (K05298,K00150,K00134) K01803 (K01623,K01624) (K03841,K02446,K11532,K01086) K00615 (K01100,K11532,K01086) (K01807,K01808) K01783                                                                                                                                                                                     | 0.4545455             | 0.6363636                    | 0.6363636             | 0.6363636          |
@@ -75,7 +77,7 @@ head(results$log)           # log
 | M00374       | Energy metabolism | Carbon fixation | Dicarboxylate-hydroxybutyrate cycle              | (K00169+K00170+K00171+K00172) K01007 K01595 K00024 (K01677+K01678) (K00239+K00240-K00241-K18860) (K01902+K01903) (K15038,K15017) K14465 (K14467,K18861,K25774) K14534 K15016 K00626                                                                                                                                                                | 0.2307692             | 0.3076923                    | 0.2307692             | 0.3846154          |
 | M00377       | Energy metabolism | Carbon fixation | Reductive acetyl-CoA pathway (Wood-Ljungdahl)    | K00198 (K05299-K15022,K22015+K25123+K25124) K01938 K01491-K01500 K00297-K25007-K25008 K15023 K14138+K00197+K00194                                                                                                                                                                                                                                   | 0.4285714             | 0.4285714                    | 0.2857143             | 0.2857143          |
 
-#### 2.2 Detected KOs by Sample (`mc_list$detected_KOs`)
+#### 2.2 Detected KOs per Genome/Sample (`mc_list$detected_KOs`)
 | Module_Entry | Pathway Name                                      | Marinobacter salarius                        | Pseudooceanicola nanhaiensis                  | Alteromonas australica                     | Henriciella pelagia               |
 |--------------|---------------------------------------------------|----------------------------------------------|-----------------------------------------------|--------------------------------------------|-----------------------------------|
 | M00165       | Calvin cycle                                      | K00615 K00855 K01783 K01803 K01807           | K00134 K00615 K01623 K01783 K01803 K01808...  | K00134 K00615 K00855 K01623 K01783 K01803 | K00615 K01623 K01783 K01803...    |
