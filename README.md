@@ -1,9 +1,8 @@
+![GitHub Installs](https://img.shields.io/endpoint?url=https://r-pkg.github.io/install-stats/LiuyangLee/mclink/badge.json&label=GitHub%20Installs&style=flat-square)
+![CRAN Downloads](https://img.shields.io/badge/dynamic/json?url=https://cranlogs.r-pkg.org/badges/grand-total/mclink&query=$.count&label=CRAN%20Downloads&color=blue&style=flat-square)
 ```markdown
 
 # mclink: Metabolic Pathway Completeness and Abundance Analysis
-
-![GitHub Installs](https://img.shields.io/endpoint?url=https://r-pkg.github.io/install-stats/LiuyangLee/mclink/badge.json&label=GitHub%20Installs&style=flat-square)
-![CRAN Downloads](https://img.shields.io/badge/dynamic/json?url=https://cranlogs.r-pkg.org/badges/grand-total/mclink&query=$.count&label=CRAN%20Downloads&color=blue&style=flat-square)
 
 ## Overview
 `mclink` provides comprehensive tools for analyzing metabolic pathway completeness and abundance using KEGG Orthology (KO) data from (meta)genomic and (meta)transcriptomic studies. Key features include:
@@ -12,11 +11,15 @@
 - **Smart KO handling**: Specialized methods for plus-separated (subunits) and comma-separated (isoforms) KOs
 - **Publication-ready outputs**: Pathway coverage metrics and detailed KO detection reports
 
-## Quick Start
+## Installation
 ```R
 # Install from GitHub
 if (!require("devtools")) install.packages("devtools")
 devtools::install_github("LiuyangLee/mclink")
+```
+
+## Quick Start
+```R
 library(mclink)
 # Using built-in datasets
 data(KO_pathway_ref)
