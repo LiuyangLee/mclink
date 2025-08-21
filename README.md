@@ -1,20 +1,16 @@
 ```markdown
 # mclink: Metabolic Pathway Completeness and Abundance Analysis
-
 ![GitHub Installs](https://img.shields.io/endpoint?url=https://r-pkg.github.io/install-stats/LiuyangLee/mclink/badge.json&label=GitHub%20Installs&style=flat-square)
 ![CRAN Downloads](https://img.shields.io/badge/dynamic/json?url=https://cranlogs.r-pkg.org/badges/grand-total/mclink&query=$.count&label=CRAN%20Downloads&color=blue&style=flat-square)
 
 ## Overview
-
 `mclink` provides comprehensive tools for analyzing metabolic pathway completeness and abundance using KEGG Orthology (KO) data from (meta)genomic and (meta)transcriptomic studies. Key features include:
-
 - **Dual analysis modes**: Completeness (presence/absence) and abundance-weighted scoring
 - **Flexible input**: Works with built-in KEGG references or custom datasets
 - **Smart KO handling**: Specialized methods for plus-separated (subunits) and comma-separated (isoforms) KOs
 - **Publication-ready outputs**: Pathway coverage metrics and detailed KO detection reports
 
 ## Installation
-
 ```r
 # Install from GitHub
 if (!require("devtools")) install.packages("devtools")
@@ -22,14 +18,11 @@ devtools::install_github("LiuyangLee/mclink")
 ```
 
 ## Quick Start
-
 ```r
 library(mclink)
-
 # Using built-in datasets
 data(KO_pathway_ref)
 data(KO_Sample_wide)
-
 # Analyze selected pathways
 selected_modules <- c("M00176", "M00165", "M00173", "M00374")
 results <- mclink(
@@ -37,14 +30,13 @@ results <- mclink(
   data = KO_Sample_wide,
   table_feature = "completeness"
 )
-
 # Access results
 head(results$coverage)      # Pathway coverage metrics
 head(results$detected_KOs)  # Detected KOs per pathway
+head(results$log)           # log
 ```
 
 ## Key Features
-
 ### Analysis Modes
 - **Completeness analysis**: Binary presence/absence scoring
 - **Abundance analysis**: Weighted by KO abundance levels
@@ -56,12 +48,24 @@ head(results$detected_KOs)  # Detected KOs per pathway
 | Comma-separated  | max (completeness), sum (abundance) | Gene isoforms/alternatives |
 
 ### Output Options
-- **File exports**: TSV format for both coverage and KO detection
-- **Pathway-split outputs**: Optional separate files per pathway
+- **R list**: Coverage and KO detection results as dataframes, along with a log string recording the analysis process.
+- **File exports**: Coverage and KO detection results in TSV format, along with a log file recording the analysis process.
+- **Pathway-split exports**: Optional per-pathway TSV files (if enabled).
 
-Complete Output Documentation
-1. **Pathway Coverage Matrix (mc_list$coverage)
 
+## Example for Input and Output Data
+### 1 Input Data Preview (R dataframe `KO_Sample_wide`)
+| KO     | Marinobacter_salarius | Pseudooceanicola_nanhaiensis | Alteromonas_australica | Henriciella_pelagia |
+|--------|----------------------|----------------------------|----------------------|-------------------|
+| K00001 | 61.44954            | 16.92329                  | 6.854643            | 9.592472         |
+| K00002 | 0.00000             | 0.00000                   | 5.983655            | 0.000000         |
+| K00014 | 49.84410            | 20.23131                  | 17.343312           | 24.083303        |
+| K00015 | 0.00000             | 27.09820                  | 0.000000            | 0.000000         |
+| K00018 | 43.10113            | 0.00000                   | 19.115001           | 3.344125         |
+| K00019 | 49.84410            | 41.88975                  | 13.879528           | 9.634129         |
+
+### 2 Output Data Preview (R list `mc_list`)
+#### 2.1 Pathway Coverage Matrix (`mc_list$coverage`)
 | Module_Entry | Level_2           | Level_3         | Pathway Name                                      | Definition (Key KOs)                                                                                                                                                                                                                                                                                                                                 | Marinobacter salarius | Pseudooceanicola nanhaiensis | Alteromonas australica | Henriciella pelagia |
 |--------------|-------------------|-----------------|---------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|------------------------------|------------------------|---------------------|
 | M00165       | Energy metabolism | Carbon fixation | Reductive pentose phosphate cycle (Calvin cycle) | K00855 (K01601-K01602) K00927 (K05298,K00150,K00134) K01803 (K01623,K01624) (K03841,K02446,K11532,K01086) K00615 (K01100,K11532,K01086) (K01807,K01808) K01783                                                                                                                                                                                     | 0.4545455             | 0.6363636                    | 0.6363636             | 0.6363636          |
@@ -71,8 +75,7 @@ Complete Output Documentation
 | M00374       | Energy metabolism | Carbon fixation | Dicarboxylate-hydroxybutyrate cycle              | (K00169+K00170+K00171+K00172) K01007 K01595 K00024 (K01677+K01678) (K00239+K00240-K00241-K18860) (K01902+K01903) (K15038,K15017) K14465 (K14467,K18861,K25774) K14534 K15016 K00626                                                                                                                                                                | 0.2307692             | 0.3076923                    | 0.2307692             | 0.3846154          |
 | M00377       | Energy metabolism | Carbon fixation | Reductive acetyl-CoA pathway (Wood-Ljungdahl)    | K00198 (K05299-K15022,K22015+K25123+K25124) K01938 K01491-K01500 K00297-K25007-K25008 K15023 K14138+K00197+K00194                                                                                                                                                                                                                                   | 0.4285714             | 0.4285714                    | 0.2857143             | 0.2857143          |
 
-2. **Detected KOs by Sample (mc_list$detected_KOs)
-
+#### 2.2 Detected KOs by Sample (`mc_list$detected_KOs`)
 | Module_Entry | Pathway Name                                      | Marinobacter salarius                        | Pseudooceanicola nanhaiensis                  | Alteromonas australica                     | Henriciella pelagia               |
 |--------------|---------------------------------------------------|----------------------------------------------|-----------------------------------------------|--------------------------------------------|-----------------------------------|
 | M00165       | Calvin cycle                                      | K00615 K00855 K01783 K01803 K01807           | K00134 K00615 K01623 K01783 K01803 K01808...  | K00134 K00615 K00855 K01623 K01783 K01803 | K00615 K01623 K01783 K01803...    |
@@ -82,7 +85,8 @@ Complete Output Documentation
 | M00374       | Dicarboxylate-hydroxybutyrate cycle               | K00239-K00241 K01007 K01595 K01902          | K00024 K00239-K00241 K00626 K01902-K01903    | K00024 K00239 K00241 K01007 K01595 K01902 | K00024 K00239-K00241 K00626...    |
 | M00377       | Wood-Ljungdahl pathway                            | K00297 K01491 K01938 K22015                 | K00297 K01491 K01938                         | K00297 K01491                              | K00297 K01491                     |
 
-3. **Process Log head(mc_list$log, n = 57)
+#### 2.3 Process Log (`mc_list$log`)
+```
 [1] "[2025-08-21 17:35:12] mclink started!"
 [2] "[2025-08-21 17:35:12] Input Sample-KO table type: completeness"
 [3] "[2025-08-21 17:35:12] Scale method for plus: min"
@@ -140,25 +144,22 @@ Complete Output Documentation
 [55] "[2025-08-21 17:35:12]    Running KOs space: M00165 = M00165_5"
 [56] "[2025-08-21 17:35:12]    Running KOs space: M00165 = K01783"
 [57] "[2025-08-21 17:35:12] Completed Module: M00165"
+```
 
 ## Documentation
-
 Full function reference:
 ```r
 ?mclink::mclink
 ```
 
 ## Citation
-
 If you use `mclink` in your research, please cite:
-
 > Li, L., Huang, D., Hu, Y., Rudling, N. M., Canniffe, D. P., Wang, F., & Wang, Y.
 > "Globally distributed Myxococcota with photosynthesis gene clusters illuminate the origin and evolution of a potentially chimeric lifestyle."
 > *Nature Communications* (2023), 14, 6450.
 > https://doi.org/10.1038/s41467-023-42193-7
 
 ## Dependencies
-
 - R (≥ 3.5)
 - data.table (≥ 1.17.0)
 - dplyr (≥ 1.1.4)
@@ -166,11 +167,9 @@ If you use `mclink` in your research, please cite:
 - tibble (≥ 3.2.1)
 
 ## License
-
 GPL-3 © [Liuyang Li](https://orcid.org/0000-0001-6004-9437)
 
 ## Contact
-
 - Maintainer: Liuyang Li <cyanobacteria@yeah.net>
 - Bug reports: https://github.com/LiuyangLee/mclink/issues
 ```
