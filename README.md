@@ -1,6 +1,11 @@
 ```markdown
 # mclink: Metabolic Pathway Completeness and Abundance Analysis
 
+![GitHub Stars](https://img.shields.io/github/stars/LiuyangLee/mclink?label=Stars&style=flat-square&logo=github)
+![GitHub Forks](https://img.shields.io/github/forks/LiuyangLee/mclink?label=Forks&style=flat-square&logo=github)
+![GitHub Downloads](https://img.shields.io/github/downloads/LiuyangLee/mclink/total?label=Repo%20Downloads&color=blue&style=flat-square)
+![RStudio CRAN Downloads](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fcranlogs.r-pkg.org%2Fbadges%2Fgrand-total%2Fmclink&query=$.count&label=CRAN%20Downloads&color=green&style=flat-square)
+
 ## Overview
 
 `mclink` provides comprehensive tools for analyzing metabolic pathway completeness and abundance using KEGG Orthology (KO) data from (meta)genomic and (meta)transcriptomic studies. Key features include:
