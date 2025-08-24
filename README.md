@@ -33,6 +33,16 @@ The distill analysis of metabolic pathway coverage is calculated based on the ab
 | Comma-separated         | max                  | Completeness assessment - any component indicates functional pathway        | Gene isoforms                      |
 | (K1,K2,...)             | sum                  | Abundance quantification - sums all functionally equivalent variants        | or alternative pathways           |
 
+### Specialized KO Handling
+| KO Type          | Scaling Method       | Description                                                                 | Typical Use Case          |
+|------------------|----------------------|-----------------------------------------------------------------------------|---------------------------|
+| **Plus-separated** <br> (K1+K2+...) | **mean (default)**   | Moderate approach - calculates average value of all components              | **Protein complexes**     |
+|                  | **min (conservative)** | Strict requirement - uses lowest value (all components must be present)     | **Enzyme subunits**       |
+|                  | **max (liberal)**      | Lenient approach - uses highest value (any component indicates completeness)|                           |
+|                  |                      |                                                                             |                           |
+| **Comma-separated** <br> (K1,K2,...) | **max**              | Completeness assessment - (any component indicates completeness)            | **Gene isoforms**         |
+|                  | **sum**              | Abundance quantification - sums all functionally equivalent variants        | **Alternative pathways**  |
+
 ### Output Options
 - **R list**: Coverage and KO detection results as dataframes, along with a log string recording the analysis process.
 - **File exports**: Coverage and KO detection results in TSV format, along with a log file recording the analysis process.

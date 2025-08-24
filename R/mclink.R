@@ -20,9 +20,12 @@ NULL  #
 #' module M00020: “K00058 K00831 (K01079, K02203, K22305)”:
 #' 1. Convert the abundance table of KOs into a 0-1 matrix.
 #' 2. Consider K00058 as step 1, K00831 as step 2, and (K01079, K02203, K22305) as step 3.
-#' 3. Calculate the maximum value of step 3 (K01079, K02203, K22305).
-#' 4. Use this value along with the values of step 1 and step 2 to calculate the average value, representing the completeness of the module M00020.
-#'
+#' 3. Calculate the `maximum` (or `minimum`, `mean`) value of step 3 (K01079, K02203, K22305).
+#'    If presence of any KO indicates completeness, calculate the `maximum` value;
+#'    If all KOs must be resent for completeness, calculate the `minimum` value.
+#'    For a moderate approach, calculate the `mean` value.
+#' 4. Use this value along with the values of step 1 and step 2 to calculate the average value,
+#'    representing the completeness of the module M00020.
 #' @param ref Pathway information data frame. When `NULL` (default),
 #'        uses the built-in \code{\link{KO_pathway_ref}} dataset. Must contain the
 #'        same columns as the built-in dataset if providing custom data.
@@ -33,16 +36,16 @@ NULL  #
 #'          \item "completeness" (binary presence/absence, default)
 #'          \item "abundance" (weighted by KO abundance)
 #'        }
-#' @param plus_scale_method Scaling method for plus-separated KOs (subunits/complexes):
+#' @param plus_scale_method Scaling method for plus-separated KOs (K1+K2+...) (Enzyme subunits/Protein complexes):
 #'        \itemize{
-#'          \item "mean" - Moderate approach (default)
-#'          \item "min" - Rigorous/conservative estimate
-#'          \item "max" - Liberal estimate
+#'          \item "mean" - Moderate approach (default), calculates average value of all components
+#'          \item "min" - Rigorous/conservative estimate, uses lowest value (all components must be present)
+#'          \item "max" - Liberal estimate, uses highest value (any component indicates completeness)
 #'        }
-#' @param comma_scale_method Scaling method for comma-separated KOs (isoforms/alternatives):
+#' @param comma_scale_method Scaling method for comma-separated KOs (K1,K2,...) (Gene isoforms/Alternative pathways):
 #'        \itemize{
-#'          \item "max" - For completeness analysis (default)
-#'          \item "sum" - For abundance analysis
+#'          \item "max" - For completeness analysis (default), any component indicates functional pathway
+#'          \item "sum" - For abundance analysis, sums all functionally equivalent variants
 #'        }
 #' @param out_dir Output directory path. If `NULL` (default), results are only
 #'        returned as R objects without writing files.
