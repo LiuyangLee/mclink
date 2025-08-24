@@ -29,20 +29,26 @@ The distill analysis of metabolic pathway coverage is calculated based on the ab
 | Plus-separated          | mean (default)       | Moderate approach - calculates average value of all components              | Protein complexes                  |
 | (K1+K2+...)             | min (conservative)   | Strict requirement - uses lowest value (all components must be present)     | or enzyme subunits                |
 |                         | max (liberal)        | Lenient approach - uses highest value (any component indicates completeness)|                                    |
-
 | Comma-separated         | max                  | Completeness assessment - any component indicates functional pathway        | Gene isoforms                      |
 | (K1,K2,...)             | sum                  | Abundance quantification - sums all functionally equivalent variants        | or alternative pathways           |
 
-### Specialized KO Handling
+### Plus-separated KOs (K1+K2+...)
+| Scaling Method       | Description                                                                 |
+|----------------------|-----------------------------------------------------------------------------|
+| mean (default)       | Moderate approach - calculates average value of all components              |
+| min (conservative)   | Strict requirement - uses lowest value (all components must be present)     |
+| max (liberal)        | Lenient approach - uses highest value (any component indicates completeness)|
 
-| KO Type                 | Scaling Method       | Description                                                                 | Typical Use Case          |
-|-------------------------|----------------------|-----------------------------------------------------------------------------|---------------------------|
-| Plus-separated (K1+K2+...) | mean (default)       | Moderate approach - calculates average value of all components              | Protein complexes<br>Enzyme subunits |
-|                         | min (conservative)   | Strict requirement - uses lowest value (all components must be present)     |                           |
-|                         | max (liberal)        | Lenient approach - uses highest value (any component indicates completeness)|                           |
-|-------------------------|----------------------|-----------------------------------------------------------------------------|---------------------------|
-| Comma-separated (K1,K2,...) | max                  | Completeness assessment - any component indicates functional pathway        | Gene isoforms<br>Alternative pathways |
-|                         | sum                  | Abundance quantification - sums all functionally equivalent variants        |                           |
+**Typical Use Cases:** Protein complexes, Enzyme subunits
+
+### Comma-separated KOs (K1,K2,...)
+| Scaling Method       | Description                                                                 |
+|----------------------|-----------------------------------------------------------------------------|
+| max                  | Completeness assessment - any component indicates functional pathway        |
+| sum                  | Abundance quantification - sums all functionally equivalent variants        |
+
+**Typical Use Cases:** Gene isoforms, Alternative pathways
+
 
 ### Output Options
 - **R list**: Coverage and KO detection results as dataframes, along with a log string recording the analysis process.
