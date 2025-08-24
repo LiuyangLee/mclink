@@ -23,16 +23,7 @@ The distill analysis of metabolic pathway coverage is calculated based on the ab
 - **Completeness analysis**: Binary presence/absence scoring
 - **Abundance analysis**: Weighted by KO abundance levels
 
-### Specialized KO Handling
-| KO Type                 | Scaling Method       | Description                                                                 | Typical Use Case                   |
-|-------------------------|----------------------|-----------------------------------------------------------------------------|------------------------------------|
-| Plus-separated          | mean (default)       | Moderate approach - calculates average value of all components              | Protein complexes                  |
-| (K1+K2+...)             | min (conservative)   | Strict requirement - uses lowest value (all components must be present)     | or enzyme subunits                |
-|                         | max (liberal)        | Lenient approach - uses highest value (any component indicates completeness)|                                    |
-| Comma-separated         | max                  | Completeness assessment - any component indicates functional pathway        | Gene isoforms                      |
-| (K1,K2,...)             | sum                  | Abundance quantification - sums all functionally equivalent variants        | or alternative pathways           |
-
-### Plus-separated KOs (K1+K2+...)
+### Specialized KO Handling: Plus-separated KOs (K1+K2+...)
 | Scaling Method       | Description                                                                 |
 |----------------------|-----------------------------------------------------------------------------|
 | mean (default)       | Moderate approach - calculates average value of all components              |
@@ -41,11 +32,11 @@ The distill analysis of metabolic pathway coverage is calculated based on the ab
 
 **Typical Use Cases:** Protein complexes, Enzyme subunits
 
-### Comma-separated KOs (K1,K2,...)
+### Specialized KO Handling: Comma-separated KOs (K1,K2,...)
 | Scaling Method       | Description                                                                 |
 |----------------------|-----------------------------------------------------------------------------|
-| max                  | Completeness assessment - any component indicates functional pathway        |
-| sum                  | Abundance quantification - sums all functionally equivalent variants        |
+| max (default)        | Completeness assessment - any component indicates functional pathway        |
+| sum (abundance analysis) | Abundance quantification - sums all functionally equivalent variants    |
 
 **Typical Use Cases:** Gene isoforms, Alternative pathways
 
