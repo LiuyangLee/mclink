@@ -29,6 +29,7 @@ The distill analysis of metabolic pathway coverage is calculated based on the ab
 | `mean` (default)       | Moderate approach - calculates average value of all components              |
 | `min` (conservative)   | Strict requirement - uses lowest value (all components must be present)     |
 | `max` (liberal)        | Lenient approach - uses highest value (any component indicates completeness)|
+
 **Typical Use Cases:** Protein complexes, Enzyme subunits
 
 ### Specialized KO Handling: Comma-separated KOs (K1,K2,...)
@@ -36,6 +37,7 @@ The distill analysis of metabolic pathway coverage is calculated based on the ab
 |----------------------|-----------------------------------------------------------------------------|
 | `max` (default)        | Completeness assessment - any component indicates functional pathway        |
 | `sum` (abundance analysis) | Abundance quantification - sums all functionally equivalent variants    |
+
 **Typical Use Cases:** Gene isoforms, Alternative pathways
 
 
