@@ -13,15 +13,10 @@ Should be a tab-delimited file with KO identifiers as row names.}
 \item{pathway_infor}{Data frame containing pathway information, see examples.}
 }
 \value{
-A data frame containing the filtered sample data, with only rows that match KOs in the
+A list with log and a data frame.The data frame contains the filtered sample data, with only rows that match KOs in the
 pathway information. Includes an added 'Orthology_Entry' column containing the row names.
 }
 \description{
 This function reads a KO sample table (wide format), validates its contents against
 pathway information, and returns a filtered table containing only KOs present in both datasets.
-}
-\examples{
-\dontrun{
-read_and_process_KO_table(in_KO_Sample_wide, pathway_infor)
-}
 }

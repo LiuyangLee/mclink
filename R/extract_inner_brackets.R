@@ -8,11 +8,6 @@
 #' @return A character vector containing all innermost parenthesized segments
 #'         Returns empty character vector if no matches found
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' extract_inner_brackets(s)
-#' }
 extract_inner_brackets <- function(s) {
   # Regex explanation:
   # "\\(    " - Matches literal opening parenthesis

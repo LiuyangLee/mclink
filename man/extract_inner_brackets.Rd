@@ -17,8 +17,3 @@ Returns empty character vector if no matches found
 Extracts all text segments enclosed in the innermost level of parentheses from a string.
 This is useful for parsing hierarchical or nested parenthetical expressions.
 }
-\examples{
-\dontrun{
-extract_inner_brackets(s)
-}
-}

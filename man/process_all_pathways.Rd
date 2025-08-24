@@ -36,11 +36,3 @@ Main outputs are written to:
 Processes module sample data across all pathways with specified scaling methods.
 Handles different comparison methods and outputs results by pathway.
 }
-\examples{
-\dontrun{
-process_all_pathways(
-    pathway_infor, Module_Sample, out_DIR_Module_Sample_by_pathway,
-    compare_method = c("log", "avg", "round"),
-    plus_scale_method,comma_scale_method)
-}
-}

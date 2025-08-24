@@ -14,11 +14,6 @@
 #'         - Original row names preserved in Orthology_Entry column
 #'         - Same dimensions as input (excluding the Orthology_Entry column)
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' convert_abundance_to_presence(module_abundance)
-#' }
 convert_abundance_to_presence <- function(module_abundance) {
   module_abundance %>%
     {

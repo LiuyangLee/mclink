@@ -8,7 +8,8 @@ process_all_modules(
   pathway_infor,
   Sample_KO,
   plus_scale_method,
-  comma_scale_method
+  comma_scale_method,
+  verbose = TRUE
 )
 }
 \arguments{
@@ -19,18 +20,21 @@ process_all_modules(
 \item{plus_scale_method}{Scaling method for plus-separated KOs ("mean", "min", or "max")}
 
 \item{comma_scale_method}{Scaling method for comma-separated KOs ("sum" or "max")}
+
+\item{verbose}{Logical controlling console output:
+\itemize{
+\item \code{TRUE} (default): Print progress messages
+\item \code{FALSE}: Silent mode
+}}
 }
 \value{
-A data frame containing processed results for all modules with:
-- Combined outputs from process_module_brackets for all modules
-- Unique rows to avoid duplicates
+A list with two components:
+\itemize{
+\item \code{data}: A data frame of processed results for all modules, with unique rows to avoid duplicates.
+\item \code{log}: A character vector of timestamped log messages.
+}
 }
 \description{
 Processes all metabolic modules in pathway information, handling each module's structure,
 definition, and bracket components. Aggregates results across all modules.
-}
-\examples{
-\dontrun{
-process_all_modules(pathway_infor, Sample_KO,plus_scale_method,comma_scale_method)
-}
 }

@@ -13,11 +13,6 @@
 #'         The Mean_RA column used for calculations is removed from the output.
 #'
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' ata_cal(data = KO_Sample_table)
-#' }
 ata_cal = function(data = KO_Sample_table){
   data$Mean_RA = base::apply(data, 1, mean)
   scaled_df = data

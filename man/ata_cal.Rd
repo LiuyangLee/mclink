@@ -21,8 +21,3 @@ The Mean_RA column used for calculations is removed from the output.
 This function calculates the log2 ratio of each value in a data frame
 to its corresponding row mean. Zero values are preserved as zeros in the output.
 }
-\examples{
-\dontrun{
-ata_cal(data = KO_Sample_table)
-}
-}

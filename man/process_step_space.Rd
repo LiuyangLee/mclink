@@ -25,17 +25,11 @@ Orthology_Entry, Module_Entry, Definition}
 List containing:
 - abundance_table: Processed data with mean values
 - step_count: Updated step counter
+- abundance_log: log
 }
 \description{
 Handles space-separated KOs by calculating the mean abundance across all specified KOs.
 Processes multiple KOs separated by spaces and aggregates them into a single row.
 Note: For mean calculation, uses the sum of KO abundances divided by total number of KOs,
 including those with zero abundance in all samples.
-}
-\examples{
-\dontrun{
-process_step_space(
-    module_abundance, KOs = c("K14126 K14127 K14128"),
-    aggregrate_rowname, step_count = 1)
-}
 }

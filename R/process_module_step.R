@@ -14,26 +14,8 @@
 #' @return List containing:
 #'         - abundance_table: Processed abundance values
 #'         - step_count: Updated step counter
+#'         - abundance_log: log
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#'   # Example with comma and plus separated KOs
-#'   result1 <- process_module_step(
-#'     module_abundance = ko_data,
-#'     KO_string = "K03388,K03389+K03390+K14083,K14126+K14127,K14128",
-#'     plus_scale_method = "mean",
-#'     comma_scale_method = "max"
-#'   )
-#'
-#'   # Example with space separated KOs
-#'   result2 <- process_module_step(
-#'     module_abundance = ko_data,
-#'     KO_string = "K14126 K22516",
-#'     plus_scale_method = "mean",
-#'     comma_scale_method = "max"
-#'   )
-#' }
 process_module_step <- function(module_abundance,
                                 KO_string = "K03388,K03389+K03390+K14083,K14126+K14127,K14128",
                                 aggregrate_rowname = 'bracket_1',
@@ -47,6 +29,7 @@ process_module_step <- function(module_abundance,
   has_comma <- base::grepl(",", KO_string)
   has_plus <- base::grepl("\\+", KO_string)
   has_space <- base::grepl(" ", KO_string)
+  abundance_log.tmp = list()
 
   # Case 1: String contains plus, comma, and space (most complex case)
   # (K14126+K14128,K22516+K00125 K00126 K22516,K14126 K22516+K00125)
@@ -54,7 +37,7 @@ process_module_step <- function(module_abundance,
     # Split by space first, then handle each component
     # (K14126+K14128,K22516+K00125 K00126) to (K14126+K14128,K22516+K00125) (K00126)
     KO_vector <- base::strsplit(KO_string, " ")[[1]]
-    result <- process_module_loop_plu_comma(
+    loop_plu_comma_list <- process_module_loop_plu_comma(
       KO_vector,
       module_abundance,
       process_step_plus,
@@ -65,12 +48,13 @@ process_module_step <- function(module_abundance,
       plus_scale_method,
       comma_scale_method
     )
-    KO_scale = paste(rownames(result[['abundance_table']]), collapse = '+')
+    abundance_log.tmp = loop_plu_comma_list[['abundance_log']]
+    KO_scale = paste(rownames(loop_plu_comma_list[['abundance_table']]), collapse = '+')
     result_list <- process_step_plus(
-      result[['abundance_table']],
+      loop_plu_comma_list[['abundance_table']],
       KO_scale,
       aggregrate_rowname,
-      result[['step_count']],
+      loop_plu_comma_list[['step_count']],
       plus_scale_method
     )
   }
@@ -78,7 +62,7 @@ process_module_step <- function(module_abundance,
   else if (has_plus && has_comma) {
     # Split by comma first, then handle each component
     KO_vector <- base::strsplit(KO_string, ",")[[1]]
-    result <- process_module_loop_plus(
+    loop_plus_list <- process_module_loop_plus(
       KO_vector,
       module_abundance,
       process_step_plus,
@@ -87,12 +71,13 @@ process_module_step <- function(module_abundance,
       step_count,
       plus_scale_method
     )
-    KO_scale = paste(rownames(result[['abundance_table']]), collapse = ',')
+    abundance_log.tmp = loop_plus_list[['abundance_log']]
+    KO_scale = paste(rownames(loop_plus_list[['abundance_table']]), collapse = ',')
     result_list <- process_step_comma(
-      result[['abundance_table']],
+      loop_plus_list[['abundance_table']],
       KO_scale,
       aggregrate_rowname,
-      result[['step_count']],
+      loop_plus_list[['step_count']],
       comma_scale_method
     )
   }
@@ -100,7 +85,7 @@ process_module_step <- function(module_abundance,
   else if (has_plus && has_space) {
     # Split by space first, then handle each component
     KO_vector <- base::strsplit(KO_string, " ")[[1]]
-    result <- process_module_loop_plus(
+    loop_plus_list <- process_module_loop_plus(
       KO_vector,
       module_abundance,
       process_step_plus,
@@ -109,19 +94,20 @@ process_module_step <- function(module_abundance,
       step_count,
       plus_scale_method
     )
-    KO_scale = paste(rownames(result[['abundance_table']]), collapse = ' ')
+    abundance_log.tmp = loop_plus_list[['abundance_log']]
+    KO_scale = paste(rownames(loop_plus_list[['abundance_table']]), collapse = ' ')
     result_list <- process_step_space(
-      result[['abundance_table']],
+      loop_plus_list[['abundance_table']],
       KO_scale,
       aggregrate_rowname,
-      result[['step_count']]
+      loop_plus_list[['step_count']]
     )
   }
   # Case 4: String contains comma and space (but no plus)
   else if (has_comma && has_space) {
     # Split by space first, then handle each component
     KO_vector <- base::strsplit(KO_string, " ")[[1]]
-    result <- process_module_loop_comma(
+    loop_comma_list <- process_module_loop_comma(
       KO_vector,
       module_abundance,
       process_step_comma,
@@ -130,12 +116,13 @@ process_module_step <- function(module_abundance,
       step_count,
       comma_scale_method
     )
-    KO_scale = paste(rownames(result[['abundance_table']]), collapse = ' ')
+    abundance_log.tmp = loop_comma_list[['abundance_log']]
+    KO_scale = paste(rownames(loop_comma_list[['abundance_table']]), collapse = ' ')
     result_list <- process_step_space(
-      result[['abundance_table']],
+      loop_comma_list[['abundance_table']],
       KO_scale,
       aggregrate_rowname,
-      result[['step_count']]
+      loop_comma_list[['step_count']]
     )
   }
   # Case 5: String contains only commas (K14126,K22516)
@@ -169,10 +156,14 @@ process_module_step <- function(module_abundance,
   }
   # Case 8: Single KO with no separators (K14126)
   else {
-    abundance_table = process_step_direct(module_abundance, KO_string)
-    result_list = list(abundance_table = abundance_table, step_count = step_count)
+    result = process_step_direct(module_abundance, KO_string)
+    abundance_table = result[['abundance_table']]
+    abundance_log = result[['abundance_log']]
+    result_list = list(abundance_table = abundance_table, step_count = step_count, abundance_log = abundance_log)
     #stop("Please check Module Definition!")
   }
-
+  result_list = list(abundance_table = result_list[['abundance_table']],
+                     step_count = result_list[['step_count']],
+                     abundance_log = c(abundance_log.tmp ,result_list[['abundance_log']]))
   return(result_list)
 }

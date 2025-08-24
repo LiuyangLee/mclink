@@ -15,18 +15,8 @@
 #' @return List containing:
 #'         - abundance_table: Processed abundance Data frame
 #'         - step_count: Updated step counter
+#'         - abundance_log: log
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' process_module_loop_comma(KO_vector,
-#'                           module_abundance,
-#'                           process_step_comma,
-#'                           process_step_direct,
-#'                           aggregrate_rowname = 'step_1',
-#'                           step_count = 1,
-#'                           comma_scale_method)
-#' }
 process_module_loop_comma <- function(KO_vector,
                                       module_abundance,
                                       process_step_comma,
@@ -37,6 +27,7 @@ process_module_loop_comma <- function(KO_vector,
   # Initialize empty data frames for results
   abundance_table = data.frame()
   abundance_table.tmp = data.frame()
+  log_messages = list()
 
   # Process each KO in the input vector
   for (KOs in KO_vector) {
@@ -54,15 +45,17 @@ process_module_loop_comma <- function(KO_vector,
       )
       abundance_table.tmp = result[['abundance_table']]
       step_count = result[['step_count']]
+      log_messages.tmp = result[['abundance_log']]
     }
     else {
       # Process single KO directly
-      abundance_table.tmp = process_step_direct(module_abundance, KOs)
+      abundance_list = process_step_direct(module_abundance, KOs)
+      abundance_table.tmp = abundance_list[["abundance_table"]]
+      log_messages.tmp = abundance_list[["abundance_log"]]
     }
-
     # Combine results while removing duplicates
     abundance_table <- rbind(abundance_table, abundance_table.tmp) %>% unique(.)
+    log_messages = c(log_messages, log_messages.tmp)
   }
-
-  return(list(abundance_table = abundance_table, step_count = step_count))
+  return(list(abundance_table = abundance_table, step_count = step_count, abundance_log = log_messages))
 }

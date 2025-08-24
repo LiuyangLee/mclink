@@ -33,21 +33,10 @@ process_module_loop_plus(
 List containing:
 - abundance_table: Processed abundance values
 - step_count: Updated step counter
+- abundance_log: log
 }
 \description{
 Processes a vector of KOs, applying different handling methods depending on whether
 they contain plus signs or not. Handles pathway definitions with required components
 (plus-separated KOs representing complex subunits).
-}
-\examples{
-\dontrun{
-  # Example usage:
-  result <- process_module_loop_plus(
-    KO_vector = c("K03388", "K03389+K03390+K14083", "K14126+K14127", "K14128"),
-    module_abundance = ko_data,
-    process_step_plus = handle_plus_kos,
-    process_step_direct = handle_single_ko,
-    plus_scale_method = "mean"
-  )
-}
 }

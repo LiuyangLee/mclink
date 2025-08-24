@@ -17,8 +17,3 @@ or the original string if no outer parentheses were found.
 This function checks if a string is wrapped in outer parentheses
 and removes them if present.
 }
-\examples{
-\dontrun{
-remove_outer_brackets(s)
-}
-}

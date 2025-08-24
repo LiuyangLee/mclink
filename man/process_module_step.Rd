@@ -30,28 +30,10 @@ process_module_step(
 List containing:
 - abundance_table: Processed abundance values
 - step_count: Updated step counter
+- abundance_log: log
 }
 \description{
 Processes a KO string containing various combinations of KOs separated by
 different operators (commas, plus signs, or spaces). Handles complex pathway
 definitions with multiple types of relationships between KOs.
-}
-\examples{
-\dontrun{
-  # Example with comma and plus separated KOs
-  result1 <- process_module_step(
-    module_abundance = ko_data,
-    KO_string = "K03388,K03389+K03390+K14083,K14126+K14127,K14128",
-    plus_scale_method = "mean",
-    comma_scale_method = "max"
-  )
-
-  # Example with space separated KOs
-  result2 <- process_module_step(
-    module_abundance = ko_data,
-    KO_string = "K14126 K22516",
-    plus_scale_method = "mean",
-    comma_scale_method = "max"
-  )
-}
 }

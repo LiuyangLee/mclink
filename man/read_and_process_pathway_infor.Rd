@@ -2,7 +2,7 @@
 % Please edit documentation in R/read_and_process_pathway_infor.R
 \name{read_and_process_pathway_infor}
 \alias{read_and_process_pathway_infor}
-\title{Read and process pathway information file}
+\title{Read and process Pathway information dataframe}
 \usage{
 read_and_process_pathway_infor(in_KO_pathway_ref)
 }
@@ -12,16 +12,11 @@ The file should be a tab-delimited text file containing KEGG pathway information
 with a header row and at least one column named "Module_Entry".}
 }
 \value{
-A data frame containing the processed pathway information after removing
+A list with log and a data frame containing the processed pathway information after removing
 empty/NA entries. The data frame will have the same columns as the input file.
 Returns NULL if the file cannot be read.
 }
 \description{
 This function reads a tab-delimited file containing KEGG pathway information,
 performs data validation and cleaning, and returns a processed data frame.
-}
-\examples{
-\dontrun{
-read_and_process_pathway_infor(in_KO_pathway_ref)
-}
 }

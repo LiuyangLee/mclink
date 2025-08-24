@@ -17,8 +17,3 @@ Escapes all specified special characters in a string by adding a backslash befor
 This is particularly useful for preparing strings for use in regular expressions or
 other contexts where special characters need to be treated as literals.
 }
-\examples{
-\dontrun{
-escape_special_chars(s)
-}
-}

@@ -8,11 +8,6 @@
 #' @return The input string with outer parentheses removed (if they existed),
 #'         or the original string if no outer parentheses were found.
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' remove_outer_brackets(s)
-#' }
 remove_outer_brackets <- function(s) {
   # Check if the string starts with '(' and ends with ')' using regex
   if (base::grepl("^\\(.*\\)$", s)) {

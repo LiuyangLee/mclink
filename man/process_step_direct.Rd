@@ -13,16 +13,13 @@ Orthology_Entry, Module_Entry, Definition}
 \item{KOs}{Character vector of KO IDs to extract (default: c("K14126","K14128","K14127"))}
 }
 \value{
-A subset of the input data frame containing only the specified KOs,
+List containing:
+- abundance_table: A subset of the input data frame containing only the specified KOs,
 with original module metadata preserved
+- abundance_log: log
 }
 \description{
 Processes KO abundances directly without any special scaling or aggregation.
 Simply extracts the specified KOs from the abundance table while maintaining
 the original module metadata.
-}
-\examples{
-\dontrun{
-process_step_direct(module_abundance, KOs = c("K14126","K14128","K14127"))
-}
 }

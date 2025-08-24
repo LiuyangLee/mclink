@@ -39,22 +39,10 @@ process_module_loop_plu_comma(
 List containing:
 - abundance_table: Processed abundance values
 - step_count: Updated step counter
+- abundance_log: log
 }
 \description{
 Processes a vector of KOs, applying different handling methods depending on whether
 they contain plus signs, commas, or both. Handles complex pathway definitions with
 both required components (plus-separated) and alternative forms (comma-separated).
-}
-\examples{
-\dontrun{
-process_module_loop_plu_comma(KO_vector,
-                             module_abundance,
-                             process_step_plus,
-                             process_step_comma,
-                             process_step_direct,
-                             aggregrate_rowname = 'step_1',
-                             step_count = 1,
-                             plus_scale_method,
-                             comma_scale_method)
-}
 }

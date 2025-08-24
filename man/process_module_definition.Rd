@@ -10,7 +10,7 @@ process_module_definition(sub_Sample_KO_pathway)
 \item{sub_Sample_KO_pathway}{Data frame containing module definitions in a 'Definition' column}
 }
 \value{
-Character vector of cleaned module definition strings with:
+A list with log and character vector of cleaned module definition strings. The vector contains:
 - Removed negative KO indicators
 - Simplified parentheses
 - Normalized space
@@ -19,9 +19,4 @@ Character vector of cleaned module definition strings with:
 Cleans and processes module definition strings by removing various patterns and formatting
 elements to extract core KO relationships. Handles special cases like negative KOs and
 parenthetical expressions.
-}
-\examples{
-\dontrun{
-process_module_definition(sub_Sample_KO_pathway)
-}
 }

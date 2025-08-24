@@ -1,4 +1,4 @@
-#' @title Read and process pathway information file
+#' @title Read and process Pathway information dataframe
 #'
 #' @description This function reads a tab-delimited file containing KEGG pathway information,
 #' performs data validation and cleaning, and returns a processed data frame.
@@ -7,16 +7,11 @@
 #'        The file should be a tab-delimited text file containing KEGG pathway information,
 #'        with a header row and at least one column named "Module_Entry".
 #'
-#' @return A data frame containing the processed pathway information after removing
+#' @return A list with log and a data frame containing the processed pathway information after removing
 #'         empty/NA entries. The data frame will have the same columns as the input file.
 #'         Returns NULL if the file cannot be read.
 #'
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' read_and_process_pathway_infor(in_KO_pathway_ref)
-#' }
 read_and_process_pathway_infor <- function(in_KO_pathway_ref) {
   # Use tryCatch function to handle potential errors
   tryCatch({
@@ -24,11 +19,22 @@ read_and_process_pathway_infor <- function(in_KO_pathway_ref) {
     #pathway_infor = read.csv(in_KO_pathway_ref, sep='\t',header = TRUE, check.names = F)
     pathway_infor = in_KO_pathway_ref
 
+    timestamp <- function() format(Sys.time(), "[%Y-%m-%d %H:%M:%S]")
+    log_entry <- function(msg) {
+      paste0(timestamp(), " ", msg)
+    }
+
     # Check if the file was successfully imported
     if (!is.null(pathway_infor)) {
-      cat(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] Pathway information file successfully imported.\n\n'))
+      message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] Pathway information dataframe successfully imported.'))
+      pathway_log <- list(
+          log_entry("Pathway information dataframe successfully imported.")
+        )
     } else {
-      stop(paste0('\n\n[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] *** Pathway information file is null, please check the input file path and format ***\n\n'))
+      pathway_log <- list(
+          log_entry("*** Pathway information dataframe is null, please check the input file path and format ***")
+        )
+      stop(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] *** Pathway information dataframe is null, please check the input file path and format ***\n'))
     }
     # 删除列a中含有NA的行
     pathway_infor <- pathway_infor[!(pathway_infor$Module_Entry %in% 'NA'), , drop = F]
@@ -37,15 +43,18 @@ read_and_process_pathway_infor <- function(in_KO_pathway_ref) {
 
     Module_list <- unique(pathway_infor$Module_Entry)
     if (length(Module_list) > 0) {
-      cat(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] There are ',length(Module_list),' Modules in the Pathway information file.\n\n'))
-      cat(Module_list)
-      cat('\n\n')
+      message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] There are ',length(Module_list),' Modules in the Pathway information dataframe.'))
+      pathway_log <- c(pathway_log, list(
+          log_entry(paste0('There are ',length(Module_list),' Modules in the Pathway information dataframe: ', paste(Module_list, collapse = ' ')))
+        ))
     } else {
-      stop(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] *** No Module detected, please check the input file path and format ***\n\n'))
+      pathway_log <- c(pathway_log, list(
+          log_entry('*** No Module detected, please check the input file path and format ***')
+        ))
+      stop(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] *** No Module detected, please check the input file path and format ***\n'))
     }
-
-    return(pathway_infor)
+    return(list(data = pathway_infor, log = pathway_log))
   }, error = function(e) {
-    stop(paste0('\n\n[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] *** Pathway information file import failed, please check the input file path and format ***\n\n'))
+    stop(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] *** Pathway information dataframe import failed, please check the input file path and format ***\n'))
   })
 }

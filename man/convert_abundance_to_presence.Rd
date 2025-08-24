@@ -23,8 +23,3 @@ Transforms a numeric abundance matrix into a binary presence/absence matrix,
 where 1 indicates presence (abundance > 0) and 0 indicates absence.
 Preserves row names as Orthology_Entry column in the output.
 }
-\examples{
-\dontrun{
-convert_abundance_to_presence(module_abundance)
-}
-}

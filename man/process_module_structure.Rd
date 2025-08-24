@@ -23,8 +23,3 @@ A merged dataframe containing:
 Filters and merges pathway information with sample KO data for a specific module.
 Returns a merged dataframe containing KO abundance data and pathway definitions.
 }
-\examples{
-\dontrun{
-process_module_structure(pathway_infor, Sample_KO, module)
-}
-}

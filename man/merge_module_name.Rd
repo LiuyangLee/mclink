@@ -26,8 +26,3 @@ A data frame where:
 Merges pathway information with a module table to create a sample-by-module matrix
 with proper module names. Ensures all modules are represented in the output.
 }
-\examples{
-\dontrun{
-merge_module_name(pathway_infor, module_table)
-}
-}

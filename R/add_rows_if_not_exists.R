@@ -11,11 +11,7 @@
 #'
 #' @return The original data frame with additional rows (if any were missing) where
 #'         all values are set to 0. Row and column names are preserved.
-#'
-#' @examples
-#' \dontrun{
-#' add_rows_if_not_exists(module_abundance, add_rows = c("K14126","K14128","K14127"))
-#' }
+#' @export
 add_rows_if_not_exists <- function(module_abundance, add_rows = c("K14126","K14128","K14127")) {
   missing_rows <- base::setdiff(add_rows, rownames(module_abundance))
   absent_genome_KOs <- data.frame(

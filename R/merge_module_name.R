@@ -15,11 +15,6 @@
 #'         - All modules from pathway_infor are represented
 #'         - Original row names are replaced with descriptive module names
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' merge_module_name(pathway_infor, module_table)
-#' }
 merge_module_name <- function(pathway_infor, module_table) {
   module_infor <- pathway_infor %>%
     dplyr::select(Module_Entry, Module_Name) %>%

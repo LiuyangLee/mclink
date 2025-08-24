@@ -28,16 +28,11 @@ Orthology_Entry, Module_Entry, Definition}
 List containing:
 - abundance_table: Processed data with aggregated values
 - step_count: Updated step counter
+- abundance_log: log
 }
 \description{
 Handles plus-separated KOs by applying the specified scaling method (mean, min, or max).
 Processes multiple KOs separated by plus signs and aggregates them into a single row.
 Note: For mean calculation, uses the sum of existing KO abundances divided by total
 number of KOs (including those with zero abundance in all samples).
-}
-\examples{
-\dontrun{
-process_step_plus(module_abundance, KOs = c("K14126+K14127+K14128"), aggregrate_rowname,
-                            step_count = 1, plus_scale_method)
-}
 }

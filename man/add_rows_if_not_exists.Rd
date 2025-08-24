@@ -25,8 +25,3 @@ This function checks if specified rows exist in a data frame, and if not,
 adds them with all values set to 0. Useful for ensuring consistent KO
 representation across samples.
 }
-\examples{
-\dontrun{
-add_rows_if_not_exists(module_abundance, add_rows = c("K14126","K14128","K14127"))
-}
-}

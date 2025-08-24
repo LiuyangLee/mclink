@@ -11,10 +11,6 @@
 #'         - Corresponding pathway information
 #'         - Empty dataframe if no matching KOs found
 #' @export
-#' @examples
-#' \dontrun{
-#' process_module_structure(pathway_infor, Sample_KO, module)
-#' }
 process_module_structure <- function(pathway_infor, Sample_KO, module) {
   # Filter pathway information for the specified module
   each_pathway_infor = pathway_infor %>%
@@ -27,8 +23,6 @@ process_module_structure <- function(pathway_infor, Sample_KO, module) {
 
   # Check if any matching KOs were found
   if (length(sub_Sample_KO$Orthology_Entry)>0){
-    cat(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] Running Module Entry: ',module,'\n\n'))
-
     # Merge KO data with pathway information
     sub_Sample_KO_pathway = sub_Sample_KO %>%
       base::merge(., each_pathway_infor, by = 'Orthology_Entry', all.x = T) %>%

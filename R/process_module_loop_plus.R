@@ -15,19 +15,8 @@
 #' @return List containing:
 #'         - abundance_table: Processed abundance values
 #'         - step_count: Updated step counter
+#'         - abundance_log: log
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#'   # Example usage:
-#'   result <- process_module_loop_plus(
-#'     KO_vector = c("K03388", "K03389+K03390+K14083", "K14126+K14127", "K14128"),
-#'     module_abundance = ko_data,
-#'     process_step_plus = handle_plus_kos,
-#'     process_step_direct = handle_single_ko,
-#'     plus_scale_method = "mean"
-#'   )
-#' }
 process_module_loop_plus <- function(KO_vector,
                                      module_abundance,
                                      process_step_plus,
@@ -38,6 +27,7 @@ process_module_loop_plus <- function(KO_vector,
   # Initialize empty data frames for results
   abundance_table = data.frame()
   abundance_table.tmp = data.frame()
+  log_messages = list()
 
   # Process each KO in the input vector
   for (KOs in KO_vector) {
@@ -55,15 +45,18 @@ process_module_loop_plus <- function(KO_vector,
       )
       abundance_table.tmp = result[['abundance_table']]
       step_count = result[['step_count']]
+      log_messages.tmp = result[['abundance_log']]
     }
     else {
       # Process single KO directly (no plus signs)
-      abundance_table.tmp = process_step_direct(module_abundance, KOs)
-    }
+      abundance_list = process_step_direct(module_abundance, KOs)
+      abundance_table.tmp = abundance_list[["abundance_table"]]
+      log_messages.tmp = abundance_list[["abundance_log"]]
 
+    }
     # Combine results while removing duplicates
     abundance_table <- rbind(abundance_table, abundance_table.tmp) %>% unique(.)
+    log_messages = c(log_messages, log_messages.tmp)
   }
-
-  return(list(abundance_table = abundance_table, step_count = step_count))
+  return(list(abundance_table = abundance_table, step_count = step_count, abundance_log = log_messages))
 }

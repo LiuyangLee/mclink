@@ -52,6 +52,7 @@ A list containing:
 \itemize{
 \item coverage - Data frame with pathway coverage metrics
 \item detected_KOs - List of detected KOs per pathway/module
+\item log - log of the analysis process
 }
 
 If \code{out_dir} is specified, results are also written as TSV files.
@@ -74,4 +75,6 @@ mc_list =
          comma_scale_method = "max")
 mc_coverage = mc_list[["coverage"]]
 mc_detected_KOs = mc_list[["detected_KOs"]]
+mc_log = mc_list[["log"]]
+print(head(mc_coverage))
 }

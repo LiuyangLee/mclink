@@ -17,20 +17,8 @@
 #' @return List containing:
 #'         - abundance_table: Processed abundance values
 #'         - step_count: Updated step counter
+#'         - abundance_log: log
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#'process_module_loop_plu_comma(KO_vector,
-#'                              module_abundance,
-#'                              process_step_plus,
-#'                              process_step_comma,
-#'                              process_step_direct,
-#'                              aggregrate_rowname = 'step_1',
-#'                              step_count = 1,
-#'                              plus_scale_method,
-#'                              comma_scale_method)
-#' }
 process_module_loop_plu_comma <- function(KO_vector,
                                           module_abundance,
                                           process_step_plus,
@@ -43,7 +31,7 @@ process_module_loop_plu_comma <- function(KO_vector,
   # Initialize empty data frames for results
   abundance_table = data.frame()
   abundance_table.tmp = data.frame()
-
+  abundance_log <- list()
   # Process each KO in the input vector
   for (KOs in KO_vector) {
     # Check for presence of operators
@@ -54,7 +42,7 @@ process_module_loop_plu_comma <- function(KO_vector,
     if (has_plus && has_comma) {
       # First process plus-separated components, then comma-separated alternatives
       KO_subvector <- base::strsplit(KOs, ",")[[1]]
-      plus_result <- process_module_loop_plus(
+      loop_plus_result <- process_module_loop_plus(
         KO_subvector,
         module_abundance,
         process_step_plus,
@@ -64,11 +52,12 @@ process_module_loop_plu_comma <- function(KO_vector,
         plus_scale_method
       )
 
-      KO_scale <- paste(rownames(plus_result[['abundance_table']]), collapse = ',')
-      step_count <- plus_result[['step_count']]
+      KO_scale <- paste(rownames(loop_plus_result[['abundance_table']]), collapse = ',')
+      step_count <- loop_plus_result[['step_count']]
+      abundance_log.tmp <- loop_plus_result[['abundance_log']]
 
       comma_result <- process_step_comma(
-        plus_result[['abundance_table']],
+        loop_plus_result[['abundance_table']],
         KO_scale,
         aggregrate_rowname = paste0(aggregrate_rowname, '_', step_count),
         step_count,
@@ -77,6 +66,7 @@ process_module_loop_plu_comma <- function(KO_vector,
 
       abundance_table.tmp <- comma_result[['abundance_table']]
       step_count <- comma_result[['step_count']]
+      abundance_log.tmp <- c(abundance_log.tmp, comma_result[['abundance_log']])
     }
     # Case 2: Contains only commas (alternative forms, e.g., "K22516,K14126")
     else if (has_comma) {
@@ -89,6 +79,7 @@ process_module_loop_plu_comma <- function(KO_vector,
       )
       abundance_table.tmp <- comma_result[['abundance_table']]
       step_count <- comma_result[['step_count']]
+      abundance_log.tmp <- comma_result[['abundance_log']]
     }
     # Case 3: Contains only plus signs (required components, e.g., "K22516+K00125")
     else if (has_plus) {
@@ -101,15 +92,19 @@ process_module_loop_plu_comma <- function(KO_vector,
       )
       abundance_table.tmp <- plus_result[['abundance_table']]
       step_count <- plus_result[['step_count']]
+      abundance_log.tmp <- plus_result[['abundance_log']]
     }
     # Case 4: Single KO with no operators
     else {
-      abundance_table.tmp <- process_step_direct(module_abundance, KOs)
+      direct_result <- process_step_direct(module_abundance, KOs)
+      abundance_table.tmp <- direct_result[['abundance_table']]
+      abundance_log.tmp <- direct_result[['abundance_log']]
     }
 
     # Combine results while removing duplicates
     abundance_table <- rbind(abundance_table, abundance_table.tmp) %>% unique(.)
+    abundance_log = c(abundance_log, abundance_log.tmp)
   }
 
-  return(list(abundance_table = abundance_table, step_count = step_count))
+  return(list(abundance_table = abundance_table, step_count = step_count, abundance_log = abundance_log))
 }

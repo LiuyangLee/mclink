@@ -31,10 +31,3 @@ None (writes files to disk)
 Processes pathway information and module sample data to create and export
 individual pathway-specific files containing scaled module data.
 }
-\examples{
-\dontrun{
-create_sub_module_sample(
-    pathway_infor, Module_Sample_scale,
-    out_DIR_Module_Sample_by_pathway, plus_scale_method, comma_scale_method)
-}
-}

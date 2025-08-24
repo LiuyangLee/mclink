@@ -12,16 +12,9 @@
 #'
 #' @return None (writes files to disk)
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' create_sub_module_sample(
-#'     pathway_infor, Module_Sample_scale,
-#'     out_DIR_Module_Sample_by_pathway, plus_scale_method, comma_scale_method)
-#' }
 create_sub_module_sample <- function(pathway_infor, Module_Sample_scale, out_DIR_Module_Sample_by_pathway, plus_scale_method, comma_scale_method) {
-  cat(paste0('\n[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] Output Pathway: ',unique(pathway_infor$Level_2),'\n\n'))
   for (pathway in unique(pathway_infor$Level_2)) {
+    message(paste0('[', format(Sys.time(), "%Y-%m-%d %H:%M:%S"), '] Output Pathway: ',unique(pathway)))
     pathway_scale <- gsub(' ', '_', pathway)
     out_file <- base::file.path(out_DIR_Module_Sample_by_pathway, paste0(pathway_scale,".tsv"))
 

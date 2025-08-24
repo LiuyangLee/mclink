@@ -26,8 +26,3 @@ Processes KO abundance data to group by metabolic modules, converting
 presence/absence data into module-level KO lists. Handles missing KOs
 and maintains sample-specific KO profiles.
 }
-\examples{
-\dontrun{
-group_ko_by_module(pathway_infor, Sample_KO_abundance)
-}
-}

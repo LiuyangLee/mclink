@@ -13,20 +13,15 @@
 #' @return List containing:
 #'         - abundance_table: Processed data with aggregated values
 #'         - step_count: Updated step counter
+#'         - abundance_log: log
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' process_step_comma(module_abundance, KOs = c("K14126,K14127,K14128"), aggregrate_rowname,
-#'                              step_count = 1, comma_scale_method)
-#' }
 process_step_comma <- function(module_abundance, KOs = c("K14126,K14127,K14128"), aggregrate_rowname,
                                step_count = 1, comma_scale_method) {
   # Process comma-separated KOs
   # For comma-separated entries, add new_step_name = paste0(aggregrate_rowname, '_', step_count)
   KOs_scale <- base::strsplit(KOs, ",")[[1]]
-  cat(paste0('\t\tRunning KOs comma: ',aggregrate_rowname," = ",KOs_scale,'\n'))
-
+  #cat(paste0('\t\tRunning KOs comma: ',aggregrate_rowname," = ",KOs_scale))
+  log_messages <- list(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),']','    ','Running KOs comma: ',aggregrate_rowname," = ",KOs_scale))
   # Prepare abundance table with selected KOs
   abundance_table = module_abundance %>%
     {
@@ -47,7 +42,7 @@ process_step_comma <- function(module_abundance, KOs = c("K14126,K14127,K14128")
   }
 
   # Format final result
-  result = abundance_table_scale %>%
+  abundance_table = abundance_table_scale %>%
     {as.data.frame((.), row.names = aggregrate_rowname)} %>%
     {dplyr::mutate(.,
                    Orthology_Entry = rownames(.),
@@ -56,5 +51,5 @@ process_step_comma <- function(module_abundance, KOs = c("K14126,K14127,K14128")
     )}
 
   step_count = step_count + 1
-  return(list(abundance_table = result, step_count = step_count))
+  return(list(abundance_table = abundance_table, step_count = step_count, abundance_log = log_messages))
 }

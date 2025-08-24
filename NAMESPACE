@@ -2,6 +2,7 @@
 
 export(KO_Sample_wide)
 export(KO_pathway_ref)
+export(add_rows_if_not_exists)
 export(ata_cal)
 export(convert_abundance_to_presence)
 export(create_sub_module_sample)

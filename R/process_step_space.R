@@ -14,20 +14,15 @@
 #' @return List containing:
 #'         - abundance_table: Processed data with mean values
 #'         - step_count: Updated step counter
+#'         - abundance_log: log
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' process_step_space(
-#'     module_abundance, KOs = c("K14126 K14127 K14128"),
-#'     aggregrate_rowname, step_count = 1)
-#' }
-process_step_space <- function(module_abundance, KOs = c("K14126 K14127 K14128"), aggregrate_rowname, step_count = 1) {
+process_step_space <- function(module_abundance, KOs = c("K14126 K14127 K14128"),
+                               aggregrate_rowname, step_count = 1) {
   # Process space-separated KOs (does not enter loop, no new_step_name added)
   # Uses mean calculation similar to plus-separated KOs
   KOs_scale <- base::strsplit(KOs, " ")[[1]]
-  cat(paste0('\t\tRunning KOs space: ', aggregrate_rowname, " = ", KOs_scale, '\n'))
-
+  #cat(paste0('\t\tRunning KOs space: ', aggregrate_rowname, " = ", KOs_scale, '\n'))
+  log_messages <- list(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),']','    ','Running KOs space: ', aggregrate_rowname, " = ", KOs_scale))
   # Prepare and process abundance data
   abundance_table = module_abundance %>%
     {
@@ -45,5 +40,5 @@ process_step_space <- function(module_abundance, KOs = c("K14126 K14127 K14128")
                    Definition = unique(module_abundance$Definition))}
 
   step_count = step_count + 1
-  return(list(abundance_table = abundance_table, step_count = step_count))
+  return(list(abundance_table = abundance_table, step_count = step_count, abundance_log = log_messages))
 }

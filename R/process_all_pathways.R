@@ -14,14 +14,6 @@
 #'         - Combined module file (All_modules.*.tsv)
 #'         - Pathway-specific files (via create_sub_module_sample)
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' process_all_pathways(
-#'     pathway_infor, Module_Sample, out_DIR_Module_Sample_by_pathway,
-#'     compare_method = c("log", "avg", "round"),
-#'     plus_scale_method,comma_scale_method)
-#' }
 process_all_pathways <- function(pathway_infor, Module_Sample, out_DIR_Module_Sample_by_pathway, compare_method = c("log", "avg", "round"),
                                  plus_scale_method,comma_scale_method) {
   if (compare_method == "log") {

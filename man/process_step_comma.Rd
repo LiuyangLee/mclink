@@ -28,14 +28,9 @@ Orthology_Entry, Module_Entry, Definition}
 List containing:
 - abundance_table: Processed data with aggregated values
 - step_count: Updated step counter
+- abundance_log: log
 }
 \description{
 Handles comma-separated KOs by applying the specified scaling method (sum or max).
 Processes multiple KOs separated by commas and aggregates them into a single row.
-}
-\examples{
-\dontrun{
-process_step_comma(module_abundance, KOs = c("K14126,K14127,K14128"), aggregrate_rowname,
-                             step_count = 1, comma_scale_method)
-}
 }

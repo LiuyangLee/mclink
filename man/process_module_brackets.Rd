@@ -12,7 +12,8 @@ process_module_brackets(
   module_name = "Module",
   raw_module_steps = module_steps_str,
   plus_scale_method,
-  comma_scale_method
+  comma_scale_method,
+  abundance_log = list()
 )
 }
 \arguments{
@@ -31,26 +32,20 @@ process_module_brackets(
 \item{plus_scale_method}{Scaling method for plus-separated KOs ("mean", "min", or "max")}
 
 \item{comma_scale_method}{Scaling method for comma-separated KOs ("sum" or "max")}
+
+\item{abundance_log}{A character vector of timestamped log messages}
 }
 \value{
-Data frame containing processed abundance values with:
+A list with two components:
+\itemize{
+\item \code{data}: Data frame containing processed abundance values with:
 - Rows for each bracket level and final step
 - Consistent sample columns as input
+\item \code{log}: A character vector of timestamped log messages.
+}
 }
 \description{
 Recursively processes nested brackets in module definitions to calculate
 pathway completeness or abundance scores. Handles complex pathway structures
 with multiple nesting levels.
-}
-\examples{
-\dontrun{
-process_module_brackets(module_abundance = sub_Sample_KO_pathway,
-                        module_steps_str = module_steps_str,
-                        bracket_count = 1,
-                        step_count = 1,
-                        module_name = 'Module',
-                        raw_module_steps = module_steps_str,
-                        plus_scale_method,
-                        comma_scale_method)
-}
 }

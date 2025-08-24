@@ -3,13 +3,25 @@ NULL
 #' @importFrom utils packageVersion data
 #' @export KO_pathway_ref
 #' @export KO_Sample_wide
-NULL  # 仅用于生成NAMESPACE的占位符
+NULL  #
 #' Metabolic Pathway Coverage Analysis
 #'
 #' @description
 #' Analyzes metabolic pathway completeness/abundance from (meta)genome KO presence/abundance data.
 #' Can use either built-in KEGG datasets or user-provided data frames. Output includes pathway coverage
 #' metrics and detected KOs in each pathway/module.
+#'
+#' The distill analysis of KEGG Module coverage is calculated based on the abundance or presence of KOs
+#' in a given module, as per the KEGG Module Definition. In detail, the coverage of a KEGG Module is
+#' determined by first dividing a set of KOs into distinct steps. The coverage for each step is then
+#' calculated separately, and summarized as the coverage of this KEGG Module. When calculating coverage,
+#' spaces or plus signs connecting KO numbers are interpreted as AND operators, while commas are
+#' interpreted as OR operators. For instance, to calculate the completeness for the
+#' module M00020: “K00058 K00831 (K01079, K02203, K22305)”:
+#' 1. Convert the abundance table of KOs into a 0-1 matrix.
+#' 2. Consider K00058 as step 1, K00831 as step 2, and (K01079, K02203, K22305) as step 3.
+#' 3. Calculate the maximum value of step 3 (K01079, K02203, K22305).
+#' 4. Use this value along with the values of step 1 and step 2 to calculate the average value, representing the completeness of the module M00020.
 #'
 #' @param ref Pathway information data frame. When `NULL` (default),
 #'        uses the built-in \code{\link{KO_pathway_ref}} dataset. Must contain the
@@ -41,6 +53,7 @@ NULL  # 仅用于生成NAMESPACE的占位符
 #' \itemize{
 #'   \item coverage - Data frame with pathway coverage metrics
 #'   \item detected_KOs - List of detected KOs per pathway/module
+#'   \item log - log of the analysis process
 #' }
 #'
 #' If `out_dir` is specified, results are also written as TSV files.
@@ -60,6 +73,8 @@ NULL  # 仅用于生成NAMESPACE的占位符
 #'          comma_scale_method = "max")
 #' mc_coverage = mc_list[["coverage"]]
 #' mc_detected_KOs = mc_list[["detected_KOs"]]
+#' mc_log = mc_list[["log"]]
+#' print(head(mc_coverage))
 mclink <- function(ref = NULL,
                    data = NULL,
                    table_feature = "completeness",
@@ -88,33 +103,56 @@ mclink <- function(ref = NULL,
     comma_scale_method %in% c("max", "sum")
   )
 
-  message(paste0('\n[', format(Sys.time(), "%Y-%m-%d %H:%M:%S"), ']', ' mclink started!\n\n'))
-  cat(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),']'),'Input Sample-KO table type:',table_feature,'\n\n')
-  cat(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),']'),'Scale method for plus:',plus_scale_method,'\n\n')
-  cat(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),']'),'Scale method for comma:',comma_scale_method,'\n\n')
-
+  message(paste0('[', format(Sys.time(), "%Y-%m-%d %H:%M:%S"), ']', ' mclink started!'))
+  message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] '),'Input Sample-KO table type: ',table_feature)
+  message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] '),'Scale method for plus: ',plus_scale_method)
+  message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] '),'Scale method for comma: ',comma_scale_method)
+  timestamp <- function() format(Sys.time(), "[%Y-%m-%d %H:%M:%S]")
+  log_entry <- function(msg) {
+    paste0(timestamp(), " ", msg)
+  }
+  global_log <- list(
+      log_entry("mclink started!"),
+      log_entry(paste0('Input Sample-KO table type: ',table_feature)),
+      log_entry(paste0('Scale method for plus: ',plus_scale_method)),
+      log_entry(paste0('Scale method for comma: ',comma_scale_method))
+    )
   ##########################      pathway infor input      ##########################
   # 'MASH_KEGG_Energy_metabolism.20240315.tsv'
-  pathway_infor = read_and_process_pathway_infor(ref)
+  pathway_infor_list = read_and_process_pathway_infor(ref)
+  pathway_infor = pathway_infor_list[['data']]
+  pathway_log = pathway_infor_list[['log']]
   module_level <- pathway_infor %>%
     dplyr::select(Module_Entry, Level_2, Level_3, Module_Name, Definition) %>%
     {unique(.)}
-  #cat(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),']'),'dim(module_level)...,',dim(module_level),'\n\n')
-  #print(head(module_level))
+  global_log <- c(global_log, pathway_log)
+  #message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),']'),'dim(module_level)...,',dim(module_level))
+  #message(head(module_level))
   ##########################      Sample-KO depth input      ##########################
-  Sample_KO_abundance = read_and_process_KO_table(data, pathway_infor)
+  Sample_KO_list = read_and_process_KO_table(data, pathway_infor)
+  Sample_KO_abundance = Sample_KO_list[['data']]
+  Sample_KO_log = Sample_KO_list[['log']]
+  global_log <- c(global_log, Sample_KO_log)
   ##############    convert presence     ##############
   if (table_feature == "completeness") {
-    cat(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),']'),'Converting abundance table to completeness table...\n\n')
+    message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] '),'Converting abundance table to completeness table...')
+    global_log <- c(global_log, list(
+        log_entry('Converting abundance table to completeness table...')
+      ))
     Sample_KO_abundance = convert_abundance_to_presence(Sample_KO_abundance)
   }
   ##############    Calculating coverage of respective modules     ##############
-  module_table_coverage = process_all_modules(pathway_infor, Sample_KO = Sample_KO_abundance,
-                                              plus_scale_method,
-                                              comma_scale_method)
+  module_table_list = process_all_modules(pathway_infor, Sample_KO = Sample_KO_abundance,
+                                          plus_scale_method,comma_scale_method,verbose = F)
+  module_table_coverage = module_table_list[["data"]]
+  module_table_log = module_table_list[["log"]]
   Module_Sample_coverage = merge_module_name(pathway_infor, module_table = module_table_coverage)
+  global_log <- c(global_log, module_table_log)
   ##############    Output present KOs of respective modules    ##############
-  cat(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),']'),'Summarizing present KOs of respective modules...\n\n')
+  message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] '),'Summarizing present KOs of respective modules...')
+  global_log <- c(global_log, list(
+      log_entry('Summarizing present KOs of respective modules...')
+    ))
   Module_Sample_KO_list = group_ko_by_module(pathway_infor, Sample_KO_abundance) %>%
     {.[match(rownames(Module_Sample_coverage), rownames(.)), match(colnames(Module_Sample_coverage), colnames(.))]}
   mc_detected_KOs = Module_Sample_KO_list %>%
@@ -129,11 +167,9 @@ mclink <- function(ref = NULL,
     dplyr::arrange(match(Module_Name, module_level$Module_Name)) %>%
     dplyr::select(c(Module_Entry,Level_2,Level_3,Module_Name, Definition), dplyr::everything())
 
-  mc_list <- list(coverage = mc_coverage, detected_KOs = mc_detected_KOs)
+  global_log <- c(global_log, list(log_entry('mclink finished!')))
 
-  if (is.null(out_dir)) {
-    return(mc_list)
-  } else {
+  if (!is.null(out_dir)) {
     if (!dir.exists(out_dir)) {
       dir.create(out_dir, recursive = TRUE)
     }
@@ -145,6 +181,9 @@ mclink <- function(ref = NULL,
 
       out_file <- base::file.path(out_dir, paste0('mc_completeness', '.tsv'))
       data.table::fwrite(mc_coverage, file = out_file, sep = "\t", quote = FALSE)
+
+      out_file <- base::file.path(out_dir, paste0('mc_completeness', '.log'))
+      writeLines(as.character(unlist(global_log)), con = out_file)
 
       if (split_by_pathway) {
         out_dir_ko_sample_by_pathway_presence <- base::file.path(out_dir, 'mc_by_pathway')
@@ -170,6 +209,9 @@ mclink <- function(ref = NULL,
 
       out_file <- base::file.path(out_dir, paste0('mc_abundance','.tsv'))
       data.table::fwrite(mc_coverage, file = out_file, sep = "\t", quote = FALSE)
+
+      out_file <- base::file.path(out_dir, paste0('mc_abundance', '.log'))
+      writeLines(as.character(unlist(global_log)), con = out_file)
 
       if (split_by_pathway) {
         out_dir_ko_sample_by_pathway_log <- base::file.path(out_dir, 'log_scale_by_pathway')
@@ -202,5 +244,7 @@ mclink <- function(ref = NULL,
       }
     }
   }
-  return(message(paste0('\n[', format(Sys.time(), "%Y-%m-%d %H:%M:%S"), ']', ' mclink finished!\n\n')))
+  message(paste0('[', format(Sys.time(), "%Y-%m-%d %H:%M:%S"), ']', ' mclink finished!'))
+  mc_list <- list(coverage = mc_coverage, detected_KOs = mc_detected_KOs, log = unlist(global_log))
+  return(mc_list)
 }

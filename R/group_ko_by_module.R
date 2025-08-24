@@ -13,10 +13,6 @@
 #'         - Cell values are space-separated lists of present KOs
 #'         - Empty strings for modules with no detected KOs
 #' @export
-#' @examples
-#' \dontrun{
-#' group_ko_by_module(pathway_infor, Sample_KO_abundance)
-#' }
 group_ko_by_module <- function(pathway_infor, Sample_KO_abundance) {
   replace_values <- function(df) {
     df[] <- lapply(df, function(x) {

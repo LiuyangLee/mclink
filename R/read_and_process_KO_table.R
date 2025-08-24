@@ -7,15 +7,10 @@
 #'        Should be a tab-delimited file with KO identifiers as row names.
 #' @param pathway_infor Data frame containing pathway information, see examples.
 #'
-#' @return A data frame containing the filtered sample data, with only rows that match KOs in the
+#' @return A list with log and a data frame.The data frame contains the filtered sample data, with only rows that match KOs in the
 #'         pathway information. Includes an added 'Orthology_Entry' column containing the row names.
 #'
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' read_and_process_KO_table(in_KO_Sample_wide, pathway_infor)
-#' }
 read_and_process_KO_table <- function(in_KO_Sample_wide, pathway_infor) {
   # Use tryCatch function to handle potential errors
   tryCatch({
@@ -26,11 +21,22 @@ read_and_process_KO_table <- function(in_KO_Sample_wide, pathway_infor) {
     rownames(Sample_KO) = Sample_KO[,1]
     Sample_KO = Sample_KO[,-1]
 
+    timestamp <- function() format(Sys.time(), "[%Y-%m-%d %H:%M:%S]")
+    log_entry <- function(msg) {
+      paste0(timestamp(), " ", msg)
+    }
+
     # Check if the file was successfully imported
     if (!is.null(Sample_KO)) {
-      cat(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] File successfully imported.\n\n'))
+      message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] Genome-KO File successfully imported.'))
+      KO_log <- list(
+          log_entry("Genome-KO File successfully imported.")
+        )
     } else {
-      stop(paste0('\n\n[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] *** File import failed, please check the input file path and format ***\n\n'))
+      KO_log <- list(
+          log_entry("*** Genome-KO File import failed, please check the input dataframe format ***")
+        )
+      stop(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] *** Genome-KO File import failed, please check the input dataframe format ***\n'))
     }
 
     KO_list <- unique(pathway_infor$Orthology_Entry)
@@ -39,11 +45,15 @@ read_and_process_KO_table <- function(in_KO_Sample_wide, pathway_infor) {
     common_genes <- intersect(rownames(Sample_KO), KO_list)
 
     if (length(common_genes) > 0) {
-      cat(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] There is an intersection between the first column of input file and KO list, with ',length(common_genes),' KOs:\n\n'))
-      cat(common_genes)
-      cat('\n\n')
+      message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] There are ',length(common_genes),' intersect KOs between the KO list and input dataframe.'))
+      KO_log <- c(KO_log, list(
+          log_entry(paste0('There are ',length(common_genes),' intersect KOs between the KO list and input dataframe: ', paste(common_genes, collapse = ' ')))
+        ))
     } else {
-      stop(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] *** There is no intersection between the first column of the input file and KO list, please check the input file path and format ***\n\n'))
+      KO_log <- c(KO_log, list(
+          log_entry('*** There is no intersection between the first column of the input dataframe and KO list, please check the input dataframe format ***')
+        ))
+      stop(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] *** There is no intersection between the first column of the input dataframe and KO list, please check the input dataframe format ***\n'))
     }
 
     # Use the mutate function to add a new column Orthology_Entry, the value of which is the row names of the data frame
@@ -51,8 +61,8 @@ read_and_process_KO_table <- function(in_KO_Sample_wide, pathway_infor) {
     # Filter out the rows where Orthology_Entry is in pathway_infor$Orthology_Entry
     Sample_KO <- Sample_KO[rownames(Sample_KO) %in% unique(pathway_infor$Orthology_Entry), , drop = F]
 
-    return(Sample_KO)
+    return(list(data = Sample_KO, log = KO_log))
   }, error = function(e) {
-    stop(paste0('\n\n[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] *** File import failed, please check the input file path and format ***\n\n'))
+    stop(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] *** File import failed, please check the input dataframe format ***\n'))
   })
 }

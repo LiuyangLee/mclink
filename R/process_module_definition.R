@@ -6,16 +6,11 @@
 #'
 #' @param sub_Sample_KO_pathway Data frame containing module definitions in a 'Definition' column
 #'
-#' @return Character vector of cleaned module definition strings with:
+#' @return A list with log and character vector of cleaned module definition strings. The vector contains:
 #'         - Removed negative KO indicators
 #'         - Simplified parentheses
 #'         - Normalized space
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' process_module_definition(sub_Sample_KO_pathway)
-#' }
 process_module_definition <- function(sub_Sample_KO_pathway) {
   # Use unique() to remove duplicate values in Definition column
   unique_definitions <- unique(sub_Sample_KO_pathway$Definition)
@@ -32,7 +27,19 @@ process_module_definition <- function(sub_Sample_KO_pathway) {
   step5 <- gsub("\\s+", " ", step4)
   # Replace "(Knumber)" pattern with "Knumber" (simplify parentheses)
   result <- gsub("\\((K\\d+)\\)", "\\1", step5)
-  cat(paste0('\nProcessing module steps: ', unique_definitions, '\n\n'))
-  cat(paste0('After omitting minus KOs: ', result, '\n\n'))
-  return(result)
+  #cat(paste0('\nProcessing module steps: ', unique_definitions, '\n'))
+  #cat(paste0('After omitting minus KOs: ', result, '\n'))
+
+  timestamp <- function() format(Sys.time(), "[%Y-%m-%d %H:%M:%S]")
+  log_entry <- function(msg) {
+    paste0(timestamp(), " ", msg)
+  }
+  log_messages <- list(
+      log_entry(paste0('Processing module steps: ', unique_definitions)),
+      log_entry(paste0('After omitting minus KOs: ', result))
+    )
+  return(list(
+    definition = result,
+    log = log_messages
+  ))
 }

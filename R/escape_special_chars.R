@@ -8,11 +8,6 @@
 #'
 #' @return A new string with all specified special characters escaped with backslashes
 #' @export
-#'
-#' @examples
-#' \dontrun{
-#' escape_special_chars(s)
-#' }
 escape_special_chars <- function(s) {
   # Define all special characters that need to be escaped
   special_chars <- c("(", ")", "+", "-")
