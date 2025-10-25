@@ -1,6 +1,6 @@
 Package: mclink
 Title: Metabolic Pathway Completeness and Abundance Calculation
-Version: 1.2
+Version: 1.1.1
 Authors@R:
     person(given = "Liuyang",
            family = "Li",
