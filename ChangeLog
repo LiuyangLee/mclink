@@ -1,0 +1,3 @@
+## Version 1.1.1 (2025-10-25)
+### Bug fixes
+- `mclink()`now handle single-column input gracefully without throwing an error.
