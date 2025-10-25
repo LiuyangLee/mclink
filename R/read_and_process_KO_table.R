@@ -19,7 +19,7 @@ read_and_process_KO_table <- function(in_KO_Sample_wide, pathway_infor) {
     # Sample_KO = data.table::fread(in_KO_Sample_wide, sep = "\t", header = TRUE, check.names = FALSE, data.table = FALSE)
     Sample_KO = in_KO_Sample_wide
     rownames(Sample_KO) = Sample_KO[,1]
-    Sample_KO = Sample_KO[,-1]
+    Sample_KO = Sample_KO[,-1, drop = FALSE]
 
     timestamp <- function() format(Sys.time(), "[%Y-%m-%d %H:%M:%S]")
     log_entry <- function(msg) {

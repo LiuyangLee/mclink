@@ -28,17 +28,17 @@ uses the built-in \code{\link{KO_Sample_wide}} dataset.}
 \item "abundance" (weighted by KO abundance)
 }}
 
-\item{plus_scale_method}{Scaling method for plus-separated KOs (subunits/complexes):
+\item{plus_scale_method}{Scaling method for plus-separated KOs (K1+K2+...) (Enzyme subunits/Protein complexes):
 \itemize{
-\item "mean" - Moderate approach (default)
-\item "min" - Rigorous/conservative estimate
-\item "max" - Liberal estimate
+\item "mean" - Moderate approach (default), calculates average value of all components
+\item "min" - Rigorous/conservative estimate, uses lowest value (all components must be present)
+\item "max" - Liberal estimate, uses highest value (any component indicates completeness)
 }}
 
-\item{comma_scale_method}{Scaling method for comma-separated KOs (isoforms/alternatives):
+\item{comma_scale_method}{Scaling method for comma-separated KOs (K1,K2,...) (Gene isoforms/Alternative pathways):
 \itemize{
-\item "max" - For completeness analysis (default)
-\item "sum" - For abundance analysis
+\item "max" - For completeness analysis (default), any component indicates functional pathway
+\item "sum" - For abundance analysis, sums all functionally equivalent variants
 }}
 
 \item{out_dir}{Output directory path. If \code{NULL} (default), results are only
@@ -61,6 +61,24 @@ If \code{out_dir} is specified, results are also written as TSV files.
 Analyzes metabolic pathway completeness/abundance from (meta)genome KO presence/abundance data.
 Can use either built-in KEGG datasets or user-provided data frames. Output includes pathway coverage
 metrics and detected KOs in each pathway/module.
+
+The distill analysis of KEGG Module coverage is calculated based on the abundance or presence of KOs
+in a given module, as per the KEGG Module Definition. In detail, the coverage of a KEGG Module is
+determined by first dividing a set of KOs into distinct steps. The coverage for each step is then
+calculated separately, and summarized as the coverage of this KEGG Module. When calculating coverage,
+spaces or plus signs connecting KO numbers are interpreted as AND operators, while commas are
+interpreted as OR operators. For instance, to calculate the completeness for the
+module M00020: “K00058 K00831 (K01079, K02203, K22305)”:
+\enumerate{
+\item Convert the abundance table of KOs into a 0-1 matrix.
+\item Consider K00058 as step 1, K00831 as step 2, and (K01079, K02203, K22305) as step 3.
+\item Calculate the \code{maximum} (or \code{minimum}, \code{mean}) value of step 3 (K01079, K02203, K22305).
+If presence of any KO indicates completeness, calculate the \code{maximum} value;
+If all KOs must be resent for completeness, calculate the \code{minimum} value.
+For a moderate approach, calculate the \code{mean} value.
+\item Use this value along with the values of step 1 and step 2 to calculate the average value,
+representing the completeness of the module M00020.
+}
 }
 \examples{
 data(KO_pathway_ref)

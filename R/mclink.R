@@ -157,7 +157,7 @@ mclink <- function(ref = NULL,
       log_entry('Summarizing present KOs of respective modules...')
     ))
   Module_Sample_KO_list = group_ko_by_module(pathway_infor, Sample_KO_abundance) %>%
-    {.[match(rownames(Module_Sample_coverage), rownames(.)), match(colnames(Module_Sample_coverage), colnames(.))]}
+    {.[match(rownames(Module_Sample_coverage), rownames(.)), match(colnames(Module_Sample_coverage), colnames(.)), drop = FALSE]}
   mc_detected_KOs = Module_Sample_KO_list %>%
     {tibble::rownames_to_column(., var = "Module_Name")} %>%
     {base::merge(module_level, ., by = "Module_Name", all.x = T)} %>%
