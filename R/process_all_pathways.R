@@ -31,8 +31,7 @@ process_all_pathways <- function(pathway_infor, Module_Sample, out_DIR_Module_Sa
 
   out_file <- base::file.path(out_DIR_Module_Sample_by_pathway, paste0('All_modules',".tsv"))
 
-
-  Module_Sample_out = Module_Sample_scale %>%
+  Module_Sample_out = as.data.frame(Module_Sample_scale) %>%
     {tibble::rownames_to_column(., var = "Module_Name")}
 
   data.table::fwrite(Module_Sample_out, file = out_file, sep = "\t", quote = FALSE)

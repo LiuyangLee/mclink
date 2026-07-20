@@ -22,8 +22,9 @@ create_sub_module_sample <- function(pathway_infor, Module_Sample_scale, out_DIR
       {.[(.$Level_2) %in% pathway, c('Module_Name', 'Module_Entry'),drop = F]} %>%
       unique()
     sub_Module_Sample_out = Module_Sample_scale %>%
-      {.[rownames(.) %in% unique(each_pathway_infor$Module_Name),]} %>%
+      {as.data.frame(.)[rownames(.) %in% unique(each_pathway_infor$Module_Name), , drop = FALSE]} %>%
       {tibble::rownames_to_column(., var = "Module_Name")}
+
     data.table::fwrite(sub_Module_Sample_out, file = out_file, sep = "\t", quote = FALSE)
   }
 }

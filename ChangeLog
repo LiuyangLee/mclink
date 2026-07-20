@@ -1,3 +1,7 @@
 ## Version 1.1.1 (2025-10-25)
 ### Bug fixes
 - `mclink()`now handle single-column input gracefully without throwing an error.
+
+## Version 1.1.2 (2026-07-20)
+### Bug fixes
+- create_sub_module_sample() and process_all_pathways() now handles single-column (single-sample) input gracefully when split_by_pathway = TRUE. Previously, subsetting a single-column matrix caused implicit dimension dropping (drop = TRUE), resulting in a vector instead of a data.frame, which triggered tibble::rownames_to_column() to fail with is.data.frame(df) is not TRUE.
