@@ -1,11 +1,11 @@
 ## Version 1.2.1 (2026-09-05)
 ### Performance improvements
-- `process_step_plus()`, `process_step_comma()`, `process_step_space()` and `process_step_direct()` no longer rebuild row names, drop/add metadata columns through dplyr and re-subset the full abundance table on every call; KO rows are now selected with a single base-R index and missing KOs are appended as zero rows via `add_rows_if_not_exists()` as before. This removes the dominant per-call overhead (dplyr `select`/`mutate` accounted for ~46% of runtime) in the per-module, per-step hot path.
-- `apply(x, 2, min/max)` replaced by `matrixStats::colMins()`/`colMaxs()` (C implementation). `matrixStats` added to Imports.
+- `process_step_plus()`, `process_step_comma()`, `process_step_space()` and `process_step_direct()` no longer rebuild row names, drop/add metadata columns through dplyr and re-subset the full abundance table on every call; KO rows are now selected with a single base-R index and missing KOs are appended as zero rows via `add_rows_if_not_exists()` as before.
+- `apply(x, 2, min/max)` replaced by `matrixStats::colMins()`/`colMaxs()`. `matrixStats` added to Imports.
 - `process_module_loop_plus()`, `process_module_loop_comma()`, `process_module_loop_plu_comma()` and `process_all_modules()` now accumulate per-iteration results in a list and call `rbind()` + `unique()` once after the loop, instead of re-binding and de-duplicating the growing data frame every iteration.
 - `process_module_brackets()` drops the per-iteration `unique()` inside the bracket loop (aggregated bracket rows cannot be duplicates by construction) and de-duplicates once before recursing.
-- `convert_abundance_to_presence()` rewritten with base-R vectorized `(m > 0) * 1` instead of `ifelse()`, skipping the dplyr pipe copies (~3.5x faster on large tables), and now short-circuits when the input is already binary, eliminating the redundant second conversion previously triggered by `group_ko_by_module()` in completeness mode.
-- All outputs verified identical (`identical() == TRUE`) to the previous implementation across 5 parameter combinations (completeness/abundance x mean/min/max/sum) on the `v20250402` `modules_ko_info.tsv` datasets; overall ~2.9x speedup on the built-in data, larger on wide sample tables.
+- `convert_abundance_to_presence()` rewritten with base-R vectorized `(m > 0) * 1` instead of `ifelse()`, skipping the dplyr pipe copies, and now short-circuits when the input is already binary, eliminating the redundant second conversion previously triggered by `group_ko_by_module()` in completeness mode.
+- All outputs verified identical (`identical() == TRUE`) to the previous implementation across 5 parameter combinations (completeness/abundance x mean/min/max/sum) on the `v20250402` `KO_pathway_ref` datasets.
 
 ### Data
 - Default `KO_pathway_ref` dataset `modules_ko_info.tsv` updated from `v20250402` (3846 rows) to `v20260601` (4235 rows). Same 10-column structure.
