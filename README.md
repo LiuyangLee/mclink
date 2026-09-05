@@ -202,6 +202,9 @@ If you use `mclink` in your research, please cite:
 - dplyr (≥ 1.1.4)
 - stringr (≥ 1.5.1)
 - tibble (≥ 3.2.1)
+- matrixStats (>= 1.0.0),
+- parallel
+- utils
 
 ## License
 GPL-3 © [Liuyang Li](https://orcid.org/0000-0001-6004-9437)
