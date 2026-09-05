@@ -23,21 +23,17 @@ process_step_space <- function(module_abundance, KOs = c("K14126 K14127 K14128")
   KOs_scale <- base::strsplit(KOs, " ")[[1]]
   #cat(paste0('\t\tRunning KOs space: ', aggregrate_rowname, " = ", KOs_scale, '\n'))
   log_messages <- list(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),']','    ','Running KOs space: ', aggregrate_rowname, " = ", KOs_scale))
-  # Prepare and process abundance data
-  abundance_table = module_abundance %>%
-    {
-      rownames(.) = (.$Orthology_Entry)
-      (.)
-    } %>%
-    {dplyr::select(., -c(Orthology_Entry, Module_Entry, Definition))} %>%
-    {add_rows_if_not_exists(., add_rows = KOs_scale)} %>%
-    {.[rownames(.) %in% KOs_scale, , drop = F]} %>%
-    {t(colSums(.)/length(KOs_scale))} %>%  # Calculate mean across all KOs
-    {as.data.frame((.), row.names = aggregrate_rowname)} %>%
-    {dplyr::mutate(.,
-                   Orthology_Entry = rownames(.),
-                   Module_Entry = unique(module_abundance$Module_Entry),
-                   Definition = unique(module_abundance$Definition))}
+  # Prepare and process abundance data (present KOs keep values, missing KOs become zero rows)
+  sample_cols = setdiff(colnames(module_abundance), c("Orthology_Entry", "Module_Entry", "Definition"))
+  hit = module_abundance$Orthology_Entry %in% KOs_scale
+  abundance_table = module_abundance[hit, sample_cols, drop = F]
+  rownames(abundance_table) = module_abundance$Orthology_Entry[hit]
+  abundance_table = add_rows_if_not_exists(abundance_table, add_rows = KOs_scale) %>%
+    {t(colSums(.)/length(KOs_scale))}  # Calculate mean across all KOs
+  abundance_table = as.data.frame(abundance_table, row.names = aggregrate_rowname)
+  abundance_table$Orthology_Entry = rownames(abundance_table)
+  abundance_table$Module_Entry = unique(module_abundance$Module_Entry)
+  abundance_table$Definition = unique(module_abundance$Definition)
 
   step_count = step_count + 1
   return(list(abundance_table = abundance_table, step_count = step_count, abundance_log = log_messages))

@@ -3,7 +3,7 @@
 #' A comprehensive dataset mapping KEGG Orthology (KO) entries to metabolic pathways,
 #' including module hierarchy, definitions, and enzyme annotations.
 #'
-#' @format A data frame with 3846 rows (KO entries) and 10 variables:
+#' @format A data frame with 4235 rows (KO entries) and 10 variables:
 #' \describe{
 #'   \item{Orthology_Entry}{Character. KEGG Orthology ID (e.g., "K00844").}
 #'   \item{Module_Type}{Character. Type of metabolic module (e.g., "Pathway modules").}
@@ -16,6 +16,8 @@
 #'   \item{Orthology_Name}{Character. Full enzyme name with EC number (e.g., "hexokinase \code{[EC:2.7.1.1]}").}
 #'   \item{KO_Symbol}{Character. Combined KO ID and symbol (e.g., "K00844; HK").}
 #' }
+#' @source Generated from `modules_ko_info.tsv` (KEGG module-KO mapping),
+#'   replacing the previous `KEGG_modules_ko_info.prevalence.20250402.tsv`.
 #' @export
 "KO_pathway_ref"
 

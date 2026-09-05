@@ -22,8 +22,8 @@ process_all_modules <- function(pathway_infor, Sample_KO,
                                 comma_scale_method,
                                 verbose = TRUE) {
 
-  # Initialize empty result dataframe with proper structure
-  result <- data.frame()
+  # Initialize result accumulator (rbind once after the loop instead of every iteration)
+  result_list <- list()
   Module_log <- list()
 
   log_message <- function(msg) {
@@ -81,9 +81,12 @@ process_all_modules <- function(pathway_infor, Sample_KO,
       Module_log <- c(Module_log, log_message(paste("No KOs detected in module:", each_module)))
       brackets_list.tmp = data.frame()
     }
-    # Combine results while removing duplicates
-    result <- rbind(result, brackets_list.tmp) %>% unique(.)
+    # Collect results; combine and remove duplicates once after the loop
+    if (ncol(brackets_list.tmp) > 0) {
+      result_list[[length(result_list) + 1]] <- brackets_list.tmp
+    }
   }
+  result <- if (length(result_list) > 0) unique(do.call(rbind, result_list)) else data.frame()
 
   return(list(
     data = result,

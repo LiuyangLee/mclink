@@ -28,8 +28,8 @@ process_module_loop_plu_comma <- function(KO_vector,
                                           step_count = 1,
                                           plus_scale_method,
                                           comma_scale_method) {
-  # Initialize empty data frames for results
-  abundance_table = data.frame()
+  # Initialize accumulator for results (rbind once after the loop instead of every iteration)
+  abundance_table_list = list()
   abundance_table.tmp = data.frame()
   abundance_log <- list()
   # Process each KO in the input vector
@@ -101,10 +101,11 @@ process_module_loop_plu_comma <- function(KO_vector,
       abundance_log.tmp <- direct_result[['abundance_log']]
     }
 
-    # Combine results while removing duplicates
-    abundance_table <- rbind(abundance_table, abundance_table.tmp) %>% unique(.)
+    # Collect results; combine and remove duplicates once after the loop
+    abundance_table_list[[length(abundance_table_list) + 1]] = abundance_table.tmp
     abundance_log = c(abundance_log, abundance_log.tmp)
   }
+  abundance_table = unique(do.call(rbind, abundance_table_list))
 
   return(list(abundance_table = abundance_table, step_count = step_count, abundance_log = abundance_log))
 }

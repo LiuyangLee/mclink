@@ -84,9 +84,10 @@ process_module_brackets <- function(
     sample_module_bracket = module_step_list[['abundance_table']]
     module_step_list.log = module_step_list[['abundance_log']]
     abundance_log <- c(abundance_log, module_step_list.log)
-    module_abundance = rbind(module_abundance, sample_module_bracket) %>% unique(.)
+    module_abundance = rbind(module_abundance, sample_module_bracket)
     bracket_count = bracket_count + 1
   }
+  module_abundance = unique(module_abundance)
   return(process_module_brackets(module_abundance = module_abundance,
                                  module_steps_str = module_steps_str,
                                  bracket_count = bracket_count,

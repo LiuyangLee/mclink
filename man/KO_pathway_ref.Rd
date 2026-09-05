@@ -5,7 +5,7 @@
 \alias{KO_pathway_ref}
 \title{KEGG Orthology (KO) Pathway Information Dataset}
 \format{
-A data frame with 3846 rows (KO entries) and 10 variables:
+A data frame with 4235 rows (KO entries) and 10 variables:
 \describe{
 \item{Orthology_Entry}{Character. KEGG Orthology ID (e.g., "K00844").}
 \item{Module_Type}{Character. Type of metabolic module (e.g., "Pathway modules").}

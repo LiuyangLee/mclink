@@ -24,8 +24,8 @@ process_module_loop_comma <- function(KO_vector,
                                       aggregrate_rowname = 'step_1',
                                       step_count = 1,
                                       comma_scale_method) {
-  # Initialize empty data frames for results
-  abundance_table = data.frame()
+  # Initialize accumulator for results (rbind once after the loop instead of every iteration)
+  abundance_table_list = list()
   abundance_table.tmp = data.frame()
   log_messages = list()
 
@@ -53,9 +53,10 @@ process_module_loop_comma <- function(KO_vector,
       abundance_table.tmp = abundance_list[["abundance_table"]]
       log_messages.tmp = abundance_list[["abundance_log"]]
     }
-    # Combine results while removing duplicates
-    abundance_table <- rbind(abundance_table, abundance_table.tmp) %>% unique(.)
+    # Collect results; combine and remove duplicates once after the loop
+    abundance_table_list[[length(abundance_table_list) + 1]] = abundance_table.tmp
     log_messages = c(log_messages, log_messages.tmp)
   }
+  abundance_table = unique(do.call(rbind, abundance_table_list))
   return(list(abundance_table = abundance_table, step_count = step_count, abundance_log = log_messages))
 }

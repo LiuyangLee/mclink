@@ -16,18 +16,14 @@ process_step_direct <- function(module_abundance, KOs = c("K14126","K14128","K14
   # Process KOs directly without any special handling
   #cat(paste0('\t\tRunning direct KOs: ', KOs, '\n'))
   log_messages <- list(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),']','    ','Running KOs direct: ', KOs))
-  abundance_table = module_abundance %>%
-    {
-      rownames(.) = (.$Orthology_Entry)
-      (.)
-    } %>%
-    {dplyr::select(., -c(Orthology_Entry, Module_Entry, Definition))} %>%
-    {add_rows_if_not_exists(., add_rows = KOs)} %>%
-    {dplyr::mutate(.,
-                   Orthology_Entry = rownames(.),
-                   Module_Entry = unique(module_abundance$Module_Entry),
-                   Definition = unique(module_abundance$Definition)
-    )} %>%
-    {.[rownames(.) %in% KOs, , drop = F]}
+  # Prepare abundance table with selected KOs (present KOs keep values, missing KOs become zero rows)
+  sample_cols = setdiff(colnames(module_abundance), c("Orthology_Entry", "Module_Entry", "Definition"))
+  hit = module_abundance$Orthology_Entry %in% KOs
+  abundance_table = module_abundance[hit, sample_cols, drop = F]
+  rownames(abundance_table) = module_abundance$Orthology_Entry[hit]
+  abundance_table = add_rows_if_not_exists(abundance_table, add_rows = KOs)
+  abundance_table$Orthology_Entry = rownames(abundance_table)
+  abundance_table$Module_Entry = unique(module_abundance$Module_Entry)
+  abundance_table$Definition = unique(module_abundance$Definition)
   return(list(abundance_table = abundance_table, abundance_log = log_messages))
 }
