@@ -29,8 +29,10 @@ read_and_process_KO_table <- function(in_KO_Sample_wide, pathway_infor) {
     # Check if the file was successfully imported
     if (!is.null(Sample_KO)) {
       message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] Genome-KO File successfully imported.'))
+      message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] Input table: ',nrow(Sample_KO),' KOs x ',ncol(Sample_KO),' samples.'))
       KO_log <- list(
-          log_entry("Genome-KO File successfully imported.")
+          log_entry("Genome-KO File successfully imported."),
+          log_entry(paste0('Input table: ',nrow(Sample_KO),' KOs x ',ncol(Sample_KO),' samples.'))
         )
     } else {
       KO_log <- list(

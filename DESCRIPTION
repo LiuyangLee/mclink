@@ -1,6 +1,6 @@
 Package: mclink
 Title: Metabolic Pathway Completeness and Abundance Calculation
-Version: 1.2.1
+Version: 1.3.0
 Authors@R:
     person(given = "Liuyang",
            family = "Li",
@@ -22,6 +22,7 @@ Imports:
     data.table (>= 1.17.8),
     dplyr (>= 1.1.4),
     matrixStats (>= 1.0.0),
+    parallel,
     stringr (>= 1.5.1),
     tibble (>= 3.2.1),
     utils

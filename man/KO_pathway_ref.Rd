@@ -19,6 +19,10 @@ A data frame with 4235 rows (KO entries) and 10 variables:
 \item{KO_Symbol}{Character. Combined KO ID and symbol (e.g., "K00844; HK").}
 }
 }
+\source{
+Generated from \code{modules_ko_info.tsv} (KEGG module-KO mapping),
+replacing the previous \code{KEGG_modules_ko_info.prevalence.20250402.tsv}.
+}
 \usage{
 KO_pathway_ref
 }

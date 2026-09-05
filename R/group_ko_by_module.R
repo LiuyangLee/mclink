@@ -14,23 +14,34 @@
 #'         - Empty strings for modules with no detected KOs
 #' @export
 group_ko_by_module <- function(pathway_infor, Sample_KO_abundance) {
-  replace_values <- function(df) {
-    df[] <- lapply(df, function(x) {
-      ifelse(x == 1, df$Orthology_Entry, ifelse(x == 0, "", x))
-    })
-    return(df)
+  pres = convert_abundance_to_presence(Sample_KO_abundance)
+  sample_cols = setdiff(colnames(pres), "Orthology_Entry")
+  m = as.matrix(pres[, sample_cols, drop = FALSE])
+  rownames(m) = pres$Orthology_Entry
+
+  # KO -> module map, sorted by Orthology_Entry to reproduce the row order of the
+  # former base::merge() pipeline (KOs are pasted in that order within each module)
+  map = unique(pathway_infor[, c("Orthology_Entry", "Module_Name")])
+  map = map[order(map$Orthology_Entry), , drop = FALSE]
+
+  row_idx = match(map$Orthology_Entry, rownames(m))
+  found = !is.na(row_idx)
+
+  modules = sort(unique(map$Module_Name))
+  grp_idx = split(seq_len(nrow(map)), factor(map$Module_Name, levels = modules))
+
+  out = matrix("", nrow = length(modules), ncol = length(sample_cols),
+               dimnames = list(modules, sample_cols))
+  ko_names = map$Orthology_Entry
+  for (j in seq_along(sample_cols)) {
+    v = numeric(nrow(map))
+    v[found] = m[row_idx[found], j]
+    is_one = v == 1
+    s = character(nrow(map))
+    s[is_one %in% TRUE] = ko_names[is_one %in% TRUE]
+    s[is.na(is_one)] = "NA"  # NA abundances become the literal string "NA" in pasted lists
+    out[, j] = vapply(grp_idx, function(ii) paste(s[ii][s[ii] != ""], collapse = " "),
+                      character(1))
   }
-  Sample_ko_group_by_module = Sample_KO_abundance %>%
-    {convert_abundance_to_presence(.)} %>%
-    {dplyr::select(., -c(Orthology_Entry))} %>%
-    {add_rows_if_not_exists(., add_rows = unique(pathway_infor$Orthology_Entry))} %>%
-    {dplyr::mutate(., Orthology_Entry = rownames(.))} %>%
-    {base::merge(., unique(pathway_infor[, c("Orthology_Entry","Module_Name")]), all.x = T, by = 'Orthology_Entry')} %>%
-    {replace_values(.)} %>%
-    {dplyr::select(., -Orthology_Entry)}  %>%
-    dplyr::group_by(Module_Name) %>%
-    dplyr::summarize(dplyr::across(dplyr::everything(), ~paste(.[. != ""], collapse = " "))) %>%
-    dplyr::ungroup(.) %>%
-    tibble::column_to_rownames(., 'Module_Name')
-  return(Sample_ko_group_by_module)
+  data.frame(out, check.names = FALSE, stringsAsFactors = FALSE)
 }

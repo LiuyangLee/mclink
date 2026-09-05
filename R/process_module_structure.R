@@ -13,23 +13,28 @@
 #' @export
 process_module_structure <- function(pathway_infor, Sample_KO, module) {
   # Filter pathway information for the specified module
-  each_pathway_infor = pathway_infor %>%
-    {.[(.$Module_Entry) %in% module, c("Orthology_Entry","Module_Entry","Definition"),drop = F]} %>%
-    {unique(.)}
+  each_pathway_infor = unique(pathway_infor[pathway_infor$Module_Entry %in% module,
+                                            c("Orthology_Entry","Module_Entry","Definition"),
+                                            drop = FALSE])
 
   # Filter sample KO data for orthology entries in the module
-  sub_Sample_KO = Sample_KO %>%
-    {.[rownames(.) %in% unique(each_pathway_infor$Orthology_Entry),,drop = F]}
+  idx = match(unique(each_pathway_infor$Orthology_Entry), rownames(Sample_KO), nomatch = 0L)
+  idx = idx[idx > 0L]
 
   # Check if any matching KOs were found
-  if (length(sub_Sample_KO$Orthology_Entry)>0){
-    # Merge KO data with pathway information
-    sub_Sample_KO_pathway = sub_Sample_KO %>%
-      base::merge(., each_pathway_infor, by = 'Orthology_Entry', all.x = T) %>%
-      {
-        rownames(.) = .$Orthology_Entry
-        (.)
-      }
+  if (length(idx) > 0){
+    # Same result as base::merge(by = 'Orthology_Entry', all.x = TRUE): rows sorted by
+    # Orthology_Entry, Orthology_Entry first column, pathway info attached by match
+    sub_Sample_KO = Sample_KO[idx, , drop = F]
+    sub_Sample_KO = sub_Sample_KO[order(sub_Sample_KO$Orthology_Entry), , drop = F]
+    info_idx = match(sub_Sample_KO$Orthology_Entry, each_pathway_infor$Orthology_Entry)
+    sub_Sample_KO_pathway = data.frame(
+      Orthology_Entry = sub_Sample_KO$Orthology_Entry,
+      sub_Sample_KO[, setdiff(colnames(sub_Sample_KO), "Orthology_Entry"), drop = F],
+      each_pathway_infor[info_idx, c("Module_Entry", "Definition"), drop = F],
+      stringsAsFactors = FALSE, check.names = FALSE
+    )
+    rownames(sub_Sample_KO_pathway) = sub_Sample_KO_pathway$Orthology_Entry
   } else {
     sub_Sample_KO_pathway = data.frame()
   }

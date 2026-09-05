@@ -11,7 +11,8 @@ mclink(
   plus_scale_method = "mean",
   comma_scale_method = "max",
   out_dir = NULL,
-  split_by_pathway = FALSE
+  split_by_pathway = FALSE,
+  n_cores = 1
 )
 }
 \arguments{
@@ -46,6 +47,10 @@ returned as R objects without writing files.}
 
 \item{split_by_pathway}{Logical. If \code{TRUE}, splits results by pathway/module.
 Requires non-NULL \code{out_dir}. Default: \code{FALSE}.}
+
+\item{n_cores}{Number of CPU cores for module-level parallel processing.
+Default \code{1} (sequential). Values greater than 1 are only effective
+on Unix-like systems; on Windows processing falls back to sequential.}
 }
 \value{
 A list containing:

@@ -9,7 +9,8 @@ process_all_modules(
   Sample_KO,
   plus_scale_method,
   comma_scale_method,
-  verbose = TRUE
+  verbose = TRUE,
+  n_cores = 1
 )
 }
 \arguments{
@@ -26,6 +27,11 @@ process_all_modules(
 \item \code{TRUE} (default): Print progress messages
 \item \code{FALSE}: Silent mode
 }}
+
+\item{n_cores}{Number of CPU cores for module-level parallel processing.
+Default \code{1} (sequential). Values greater than 1 use
+\code{parallel::mclapply()}, which is only effective on Unix-like
+systems; on Windows processing falls back to sequential.}
 }
 \value{
 A list with two components:

@@ -51,6 +51,9 @@ NULL  #
 #'        returned as R objects without writing files.
 #' @param split_by_pathway Logical. If `TRUE`, splits results by pathway/module.
 #'        Requires non-NULL `out_dir`. Default: `FALSE`.
+#' @param n_cores Number of CPU cores for module-level parallel processing.
+#'        Default \code{1} (sequential). Values greater than 1 are only effective
+#'        on Unix-like systems; on Windows processing falls back to sequential.
 #'
 #' @return A list containing:
 #' \itemize{
@@ -84,7 +87,8 @@ mclink <- function(ref = NULL,
                    plus_scale_method = "mean",
                    comma_scale_method = "max",
                    out_dir = NULL,
-                   split_by_pathway = FALSE) {
+                   split_by_pathway = FALSE,
+                   n_cores = 1) {
 
   # Load default datasets if not provided
   if (is.null(ref)) {
@@ -103,7 +107,8 @@ mclink <- function(ref = NULL,
     is.data.frame(data),
     table_feature %in% c("completeness", "abundance"),
     plus_scale_method %in% c("mean", "min", "max"),
-    comma_scale_method %in% c("max", "sum")
+    comma_scale_method %in% c("max", "sum"),
+    is.numeric(n_cores), n_cores >= 1
   )
 
   message(paste0('[', format(Sys.time(), "%Y-%m-%d %H:%M:%S"), ']', ' mclink started!'))
@@ -142,11 +147,27 @@ mclink <- function(ref = NULL,
     global_log <- c(global_log, list(
         log_entry('Converting abundance table to completeness table...')
       ))
+    .stage_t = Sys.time()
     Sample_KO_abundance = convert_abundance_to_presence(Sample_KO_abundance)
+    .stage_msg = sprintf('Conversion done (elapsed: %.1fs).',
+                         as.numeric(difftime(Sys.time(), .stage_t, units = "secs")))
+    message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] '), .stage_msg)
+    global_log <- c(global_log, list(log_entry(.stage_msg)))
   }
   ##############    Calculating coverage of respective modules     ##############
+  message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] '),
+          'Calculating coverage of respective modules (', length(unique(pathway_infor$Module_Entry)), ' modules)...')
+  global_log <- c(global_log, list(
+      log_entry(paste0('Calculating coverage of respective modules (', length(unique(pathway_infor$Module_Entry)), ' modules)...'))
+    ))
+  .stage_t = Sys.time()
   module_table_list = process_all_modules(pathway_infor, Sample_KO = Sample_KO_abundance,
-                                          plus_scale_method,comma_scale_method,verbose = F)
+                                          plus_scale_method,comma_scale_method,verbose = F,
+                                          n_cores = n_cores)
+  .stage_msg = sprintf('Coverage calculation done (elapsed: %.1fs).',
+                       as.numeric(difftime(Sys.time(), .stage_t, units = "secs")))
+  message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] '), .stage_msg)
+  global_log <- c(global_log, list(log_entry(.stage_msg)))
   module_table_coverage = module_table_list[["data"]]
   module_table_log = module_table_list[["log"]]
   Module_Sample_coverage = merge_module_name(pathway_infor, module_table = module_table_coverage)
@@ -156,6 +177,7 @@ mclink <- function(ref = NULL,
   global_log <- c(global_log, list(
       log_entry('Summarizing present KOs of respective modules...')
     ))
+  .stage_t = Sys.time()
   Module_Sample_KO_list = group_ko_by_module(pathway_infor, Sample_KO_abundance) %>%
     {.[match(rownames(Module_Sample_coverage), rownames(.)), match(colnames(Module_Sample_coverage), colnames(.)), drop = FALSE]}
   mc_detected_KOs = Module_Sample_KO_list %>%
@@ -163,6 +185,10 @@ mclink <- function(ref = NULL,
     {base::merge(module_level, ., by = "Module_Name", all.x = T)} %>%
     dplyr::arrange(match(Module_Name, module_level$Module_Name)) %>%
     dplyr::select(c(Module_Entry,Level_2,Level_3,Module_Name, Definition), dplyr::everything())
+  .stage_msg = sprintf('Summarizing done (elapsed: %.1fs).',
+                       as.numeric(difftime(Sys.time(), .stage_t, units = "secs")))
+  message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] '), .stage_msg)
+  global_log <- c(global_log, list(log_entry(.stage_msg)))
   ##############    Output coverage of respective modules for all pathways    ##############
   mc_coverage = Module_Sample_coverage %>%
     {tibble::rownames_to_column(., var = "Module_Name")} %>%
