@@ -1,4 +1,4 @@
-## Version 1.3.0 (2026-09-06)
+## Version 1.3.1
 ### Performance improvements
 - **Significantly improved performance on large datasets** by moving module recursion to low-level numeric matrix operations, eliminating per-call data frame dispatch, `rbind()` factor-level checks, and repeated `as.matrix()` copies.
 - **Added module-level parallelization**: `process_all_modules()` and `mclink()` gain an `n_cores` argument for parallel processing via `parallel::mclapply()` on Unix-like systems (sequential fallback on Windows).

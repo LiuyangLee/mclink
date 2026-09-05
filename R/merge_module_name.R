@@ -16,17 +16,15 @@
 #'         - Original row names are replaced with descriptive module names
 #' @export
 merge_module_name <- function(pathway_infor, module_table) {
-  module_infor <- pathway_infor %>%
-    dplyr::select(Module_Entry, Module_Name) %>%
-    {unique(.)}
-  Module_Sample = module_table %>%
-    base::merge(., module_infor, all.x = T, by = 'Module_Entry') %>%
-    {dplyr::select(., -c(Module_Entry,Orthology_Entry,Definition))} %>%
-    {
-      rownames(.) = (.$Module_Name)
-      (.)
-    } %>%
-    {dplyr::select(., -Module_Name)} %>%
-    {add_rows_if_not_exists(., add_rows = unique(module_infor$Module_Name))}
+  module_infor <- unique(pathway_infor[, c("Module_Entry", "Module_Name")])
+
+  # Same result as base::merge(module_table, module_infor, by = 'Module_Entry',
+  # all.x = TRUE): rows sorted by Module_Entry, Module_Name attached by match
+  mt <- module_table[order(module_table$Module_Entry), , drop = FALSE]
+  sample_cols <- setdiff(colnames(mt), c("Module_Entry", "Orthology_Entry", "Definition"))
+  Module_Sample <- mt[, sample_cols, drop = FALSE]
+  rownames(Module_Sample) <- module_infor$Module_Name[match(mt$Module_Entry, module_infor$Module_Entry)]
+
+  Module_Sample <- add_rows_if_not_exists(Module_Sample, add_rows = unique(module_infor$Module_Name))
   return(Module_Sample)
 }

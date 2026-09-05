@@ -16,32 +16,38 @@
 group_ko_by_module <- function(pathway_infor, Sample_KO_abundance) {
   pres = convert_abundance_to_presence(Sample_KO_abundance)
   sample_cols = setdiff(colnames(pres), "Orthology_Entry")
-  m = as.matrix(pres[, sample_cols, drop = FALSE])
-  rownames(m) = pres$Orthology_Entry
 
   # KO -> module map, sorted by Orthology_Entry to reproduce the row order of the
   # former base::merge() pipeline (KOs are pasted in that order within each module)
   map = unique(pathway_infor[, c("Orthology_Entry", "Module_Name")])
   map = map[order(map$Orthology_Entry), , drop = FALSE]
 
-  row_idx = match(map$Orthology_Entry, rownames(m))
+  row_idx = match(map$Orthology_Entry, rownames(pres))
   found = !is.na(row_idx)
+  found_idx = row_idx[found]
 
   modules = sort(unique(map$Module_Name))
-  grp_idx = split(seq_len(nrow(map)), factor(map$Module_Name, levels = modules))
+  grp = match(map$Module_Name, modules)  # module group index per map row
+  ko_names = map$Orthology_Entry
+  n_map = nrow(map)
 
+  # Sparse paste: only KOs that are actually present (or NA) touch split/paste;
+  # everything else is the pre-filled empty string
   out = matrix("", nrow = length(modules), ncol = length(sample_cols),
                dimnames = list(modules, sample_cols))
-  ko_names = map$Orthology_Entry
   for (j in seq_along(sample_cols)) {
-    v = numeric(nrow(map))
-    v[found] = m[row_idx[found], j]
+    col_j = pres[[sample_cols[j]]]
+    v = numeric(n_map)
+    v[found] = col_j[found_idx]
     is_one = v == 1
-    s = character(nrow(map))
-    s[is_one %in% TRUE] = ko_names[is_one %in% TRUE]
-    s[is.na(is_one)] = "NA"  # NA abundances become the literal string "NA" in pasted lists
-    out[, j] = vapply(grp_idx, function(ii) paste(s[ii][s[ii] != ""], collapse = " "),
-                      character(1))
+    ii = which(is_one %in% TRUE | is.na(is_one))
+    if (length(ii) > 0) {
+      strings = ko_names[ii]
+      strings[is.na(is_one[ii])] = "NA"  # NA abundances become the literal string "NA"
+      parts = split(strings, grp[ii])
+      out[as.integer(names(parts)), j] = vapply(parts, function(x) paste(x[x != ""], collapse = " "),
+                                                character(1))
+    }
   }
   data.frame(out, check.names = FALSE, stringsAsFactors = FALSE)
 }

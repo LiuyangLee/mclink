@@ -180,21 +180,23 @@ mclink <- function(ref = NULL,
   .stage_t = Sys.time()
   Module_Sample_KO_list = group_ko_by_module(pathway_infor, Sample_KO_abundance) %>%
     {.[match(rownames(Module_Sample_coverage), rownames(.)), match(colnames(Module_Sample_coverage), colnames(.)), drop = FALSE]}
-  mc_detected_KOs = Module_Sample_KO_list %>%
-    {tibble::rownames_to_column(., var = "Module_Name")} %>%
-    {base::merge(module_level, ., by = "Module_Name", all.x = T)} %>%
-    dplyr::arrange(match(Module_Name, module_level$Module_Name)) %>%
-    dplyr::select(c(Module_Entry,Level_2,Level_3,Module_Name, Definition), dplyr::everything())
+  # Equivalent to rownames_to_column -> merge(module_level, all.x = TRUE) ->
+  # arrange back to module_level order -> select(meta cols, everything()):
+  # attach sample columns by Module_Name match, keep module_level row order
+  assemble_with_module_level = function(x) {
+    i = match(module_level$Module_Name, rownames(x))
+    out = cbind(module_level[, c("Module_Entry", "Level_2", "Level_3", "Module_Name", "Definition"), drop = FALSE],
+                x[i, , drop = FALSE])
+    rownames(out) = NULL
+    out
+  }
+  mc_detected_KOs = assemble_with_module_level(Module_Sample_KO_list)
   .stage_msg = sprintf('Summarizing done (elapsed: %.1fs).',
                        as.numeric(difftime(Sys.time(), .stage_t, units = "secs")))
   message(paste0('[',format(Sys.time(), "%Y-%m-%d %H:%M:%S"),'] '), .stage_msg)
   global_log <- c(global_log, list(log_entry(.stage_msg)))
   ##############    Output coverage of respective modules for all pathways    ##############
-  mc_coverage = Module_Sample_coverage %>%
-    {tibble::rownames_to_column(., var = "Module_Name")} %>%
-    {base::merge(module_level, ., by = "Module_Name", all.x = T)} %>%
-    dplyr::arrange(match(Module_Name, module_level$Module_Name)) %>%
-    dplyr::select(c(Module_Entry,Level_2,Level_3,Module_Name, Definition), dplyr::everything())
+  mc_coverage = assemble_with_module_level(Module_Sample_coverage)
 
   global_log <- c(global_log, list(log_entry('mclink finished!')))
 
